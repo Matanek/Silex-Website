@@ -445,14 +445,6 @@ pre {
   font-weight: 500;
 }
 
-.registry-link code {
-  padding: 6px 9px;
-  border: 1px solid var(--line);
-  border-radius: 3px;
-  background: var(--surface);
-  color: var(--text);
-}
-
 .package-list {
   border-top: 1px solid var(--line);
 }
@@ -481,24 +473,13 @@ pre {
 }
 
 .package-description,
-.package-version,
-.registry-link {
+.package-version {
   color: var(--muted);
   font-size: 0.9rem;
 }
 
 .package-version {
   font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
-}
-
-.registry-link {
-  margin: 30px 0 0;
-}
-
-.registry-link a {
-  margin-left: 8px;
-  text-decoration-color: #4b4b50;
-  text-underline-offset: 4px;
 }
 
 footer {
