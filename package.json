@@ -1,0 +1,13 @@
+{
+  "name": "silex-website",
+  "version": "0.1.2",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build-site.mjs dist",
+    "check": "node scripts/check-site.mjs dist"
+  },
+  "dependencies": {
+    "markdown-it": "14.3.0"
+  }
+}

@@ -10,6 +10,29 @@ The public package registry lives in its own repository at
 `https://github.com/Matanek/Silex-Registry` and is served independently from
 `https://registry.silex-lang.org/`.
 
+## Documentation
+
+`Silex/Docs` remains the source of truth for documentation because it must stay
+versioned with the compiler behavior it describes. The website build reads that
+directory and publishes:
+
+- semantic HTML under `https://silex-lang.org/docs/`;
+- the unchanged Markdown sources under `/docs/raw/`;
+- AI discovery indexes at `/llms.txt` and `/llms-full.txt`;
+- `sitemap.xml` and `robots.txt` for crawlers.
+
+For a local checkout where `Silex` and `Silex-Website` are siblings, run:
+
+```sh
+npm install
+npm run build
+npm run check
+```
+
+The deployment workflows check out `Matanek/Silex` directly. Their daily run
+keeps the published documentation synchronized even when the website itself has
+not changed.
+
 ## Migration status
 
 `pages.yml` publishes only the website during the migration. The independent

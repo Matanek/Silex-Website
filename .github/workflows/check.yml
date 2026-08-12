@@ -16,8 +16,25 @@ jobs:
       - name: Check out the website
         uses: actions/checkout@v6
 
-      - name: Build the website
-        run: node scripts/build-site.mjs dist
+      - name: Check out the Silex documentation
+        uses: actions/checkout@v6
+        with:
+          repository: Matanek/Silex
+          path: _sources/Silex
 
-      - name: Verify the website entry point
-        run: test -f dist/index.html
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install website dependencies
+        run: npm ci
+
+      - name: Build the website
+        env:
+          SILEX_DOCS_ROOT: _sources/Silex/Docs
+        run: npm run build
+
+      - name: Check generated pages and links
+        run: npm run check
