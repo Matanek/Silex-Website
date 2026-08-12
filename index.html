@@ -9,7 +9,7 @@
     >
     <meta name="theme-color" content="#0c0c0d">
     <title>Silex — Modern Code. Native Power.</title>
-    <link rel="stylesheet" href="styles.css?v=4">
+    <link rel="stylesheet" href="styles.css?v=5">
   </head>
   <body>
     <header class="site-header">
@@ -20,6 +20,7 @@
       <nav aria-label="Primary navigation">
         <a href="/docs/">Docs</a>
         <a href="#install">Install</a>
+        <a href="#zed">Zed</a>
         <a href="#packages">Packages</a>
         <a href="https://github.com/Matanek/Silex">GitHub</a>
       </nav>
@@ -143,6 +144,67 @@
               </li>
             </ol>
           </div>
+        </div>
+      </section>
+
+      <section class="section zed" id="zed" aria-labelledby="zed-title">
+        <div class="section-heading">
+          <p class="eyebrow">Editor support</p>
+          <h2 id="zed-title">Write Silex in Zed.</h2>
+          <p>
+            Get syntax highlighting, diagnostics, completion, definition
+            navigation and inline color previews through the Silex language
+            server.
+          </p>
+        </div>
+
+        <div class="zed-grid">
+          <article class="zed-card zed-release">
+            <div class="zed-card-heading">
+              <div>
+                <p class="card-kicker">Recommended</p>
+                <h3>Install from Zed</h3>
+              </div>
+              <span class="status-badge">In review</span>
+            </div>
+            <p>
+              Silex has been submitted to the official Zed extension registry.
+              Once accepted, open Zed Extensions, search for <strong>Silex</strong>,
+              and select <strong>Install</strong>.
+            </p>
+            <a class="text-link" href="https://github.com/zed-industries/extensions/pull/7190">
+              Follow the Zed registry review <span aria-hidden="true">↗</span>
+            </a>
+          </article>
+
+          <article class="zed-card zed-dev">
+            <div class="zed-card-heading">
+              <div>
+                <p class="card-kicker">Available now</p>
+                <h3>Install the development extension</h3>
+              </div>
+              <span class="status-badge status-ready">For advanced users</span>
+            </div>
+            <p>
+              Install <a href="https://rustup.rs/">Rust with rustup</a>, make sure
+              <code>silex</code> is available in your <code>PATH</code>, then clone
+              the extension repository.
+            </p>
+            <pre><code>git clone https://github.com/Matanek/Silex-Extension-Zed.git
+cd Silex-Extension-Zed
+rustup target add wasm32-wasip2</code></pre>
+            <ol class="zed-steps">
+              <li>Open the Zed command palette.</li>
+              <li>Run <code>zed: install dev extension</code>.</li>
+              <li>Select the cloned <code>Silex-Extension-Zed</code> folder.</li>
+              <li>Open a <code>.sx</code> file and start coding.</li>
+            </ol>
+            <p class="zed-note">
+              Updating the clone later? Pull the changes, then run
+              <code>zed: rebuild dev extension</code>. Node.js and npm are only
+              needed if you plan to regenerate or test the Tree-sitter grammar.
+            </p>
+          </article>
         </div>
       </section>
 

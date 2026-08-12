@@ -42,6 +42,16 @@ if (htmlFiles.length !== rawMarkdownFiles.length + 1) {
   throw new Error(`expected one HTML page per Markdown source, found ${htmlFiles.length - 1} pages for ${rawMarkdownFiles.length} sources`);
 }
 
+const homepage = await readFile(join(outputRoot, "index.html"), "utf8");
+for (const expected of [
+  'id="zed"',
+  "https://github.com/zed-industries/extensions/pull/7190",
+  "git clone https://github.com/Matanek/Silex-Extension-Zed.git",
+  "zed: install dev extension",
+]) {
+  if (!homepage.includes(expected)) throw new Error(`homepage is missing Zed installation content: ${expected}`);
+}
+
 const brokenLinks = [];
 for (const htmlPath of htmlFiles) {
   const html = await readFile(htmlPath, "utf8");
