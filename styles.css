@@ -328,16 +328,43 @@ pre {
   overflow-wrap: anywhere;
 }
 
-.verify {
-  display: flex;
+.quickstart {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.8fr) minmax(0, 1.2fr);
+  gap: 32px;
   align-items: center;
-  gap: 18px;
   margin-top: 18px;
+  padding: 28px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+}
+
+.quickstart-label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--text);
+  font-weight: 700;
+}
+
+.quickstart p {
+  margin-bottom: 0;
   color: var(--muted);
   font-size: 0.84rem;
 }
 
-.verify code,
+.quickstart pre {
+  margin: 0;
+  padding: 18px 20px;
+  overflow-x: auto;
+  border: 1px solid #242428;
+  border-radius: 4px;
+  background: #0e0e10;
+  color: var(--code);
+  font-size: 0.78rem;
+  line-height: 1.8;
+}
+
 .registry-link code {
   padding: 6px 9px;
   border: 1px solid var(--line);
@@ -422,6 +449,10 @@ footer a {
   .install-grid {
     grid-template-columns: 1fr;
   }
+
+  .quickstart {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 650px) {
@@ -483,7 +514,6 @@ footer a {
     grid-column: 2;
   }
 
-  .verify,
   footer {
     align-items: flex-start;
     flex-direction: column;
