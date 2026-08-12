@@ -329,40 +329,120 @@ pre {
 }
 
 .quickstart {
+  position: relative;
   display: grid;
-  grid-template-columns: minmax(220px, 0.8fr) minmax(0, 1.2fr);
-  gap: 32px;
+  grid-template-columns: minmax(240px, 0.72fr) minmax(0, 1.28fr);
+  gap: clamp(32px, 6vw, 76px);
   align-items: center;
-  margin-top: 18px;
-  padding: 28px;
+  margin-top: 22px;
+  padding: clamp(30px, 5vw, 56px);
+  overflow: hidden;
   border: 1px solid var(--line);
-  border-radius: 6px;
-  background: var(--surface);
+  border-radius: 8px;
+  background:
+    linear-gradient(115deg, rgb(230 255 85 / 7%), transparent 38%),
+    var(--surface);
 }
 
-.quickstart-label {
-  display: block;
-  margin-bottom: 8px;
-  color: var(--text);
+.quickstart::before {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: var(--accent);
+  content: "";
+}
+
+.quickstart-copy h3 {
+  max-width: 360px;
+  margin-bottom: 18px;
+  font-size: clamp(1.8rem, 3vw, 2.8rem);
+  line-height: 1;
+  letter-spacing: -0.045em;
+}
+
+.quickstart-copy > p:last-child {
+  max-width: 390px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.93rem;
+}
+
+.quickstart-terminal {
+  overflow: hidden;
+  border: 1px solid #242428;
+  border-radius: 7px;
+  background: #0e0e10;
+  box-shadow: 0 24px 60px rgb(0 0 0 / 24%);
+}
+
+.quickstart-titlebar {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 15px;
+  border-bottom: 1px solid #242428;
+}
+
+.quickstart-titlebar span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #3c3c41;
+}
+
+.quickstart-titlebar strong {
+  margin-left: auto;
+  color: #727178;
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: 0.68rem;
+  font-weight: 500;
+}
+
+.quickstart-steps {
+  margin: 0;
+  padding: 8px 24px;
+  list-style: none;
+}
+
+.quickstart-steps li {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  gap: 14px;
+  padding: 17px 0;
+}
+
+.quickstart-steps li + li {
+  border-top: 1px solid #242428;
+}
+
+.step-number {
+  padding-top: 2px;
+  color: var(--accent);
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: 0.67rem;
   font-weight: 700;
 }
 
-.quickstart p {
-  margin-bottom: 0;
-  color: var(--muted);
-  font-size: 0.84rem;
+.step-label {
+  display: block;
+  margin-bottom: 7px;
+  color: #828087;
+  font-size: 0.7rem;
+  font-weight: 650;
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
 }
 
-.quickstart pre {
-  margin: 0;
-  padding: 18px 20px;
-  overflow-x: auto;
-  border: 1px solid #242428;
-  border-radius: 4px;
-  background: #0e0e10;
+.quickstart-steps code {
   color: var(--code);
-  font-size: 0.78rem;
-  line-height: 1.8;
+  font-size: clamp(0.76rem, 1.2vw, 0.88rem);
+  line-height: 1.75;
+}
+
+.quickstart-steps code b {
+  color: var(--accent);
+  font-weight: 500;
 }
 
 .registry-link code {
@@ -502,6 +582,14 @@ footer a {
 
   .section {
     padding: 80px 0;
+  }
+
+  .quickstart {
+    padding: 28px 20px 22px;
+  }
+
+  .quickstart-steps {
+    padding-inline: 18px;
   }
 
   .package {

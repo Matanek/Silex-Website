@@ -9,7 +9,7 @@
     >
     <meta name="theme-color" content="#0c0c0d">
     <title>Silex — Native, code-first development</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=2">
   </head>
   <body>
     <header class="site-header">
@@ -107,15 +107,42 @@
           </article>
         </div>
 
-        <div class="quickstart">
-          <div>
-            <span class="quickstart-label">Create your first application</span>
-            <p>Prepare the native toolchain once, install the official packages, then run a Silex source file.</p>
+        <div class="quickstart" aria-labelledby="quickstart-title">
+          <div class="quickstart-copy">
+            <p class="eyebrow">Next steps</p>
+            <h3 id="quickstart-title">From install to first run.</h3>
+            <p>One setup command, two official packages, and your Silex source is ready to run.</p>
           </div>
-          <pre><code>silex setup
-silex install STD
-silex install GFX
-silex run Main.sx</code></pre>
+
+          <div class="quickstart-terminal" aria-label="Silex quickstart commands">
+            <div class="quickstart-titlebar">
+              <span></span><span></span><span></span>
+              <strong>Terminal</strong>
+            </div>
+            <ol class="quickstart-steps">
+              <li>
+                <span class="step-number">01</span>
+                <div>
+                  <span class="step-label">Prepare the toolchain</span>
+                  <code><b>$</b> silex setup</code>
+                </div>
+              </li>
+              <li>
+                <span class="step-number">02</span>
+                <div>
+                  <span class="step-label">Add the official packages</span>
+                  <code><b>$</b> silex install STD<br><b>$</b> silex install GFX</code>
+                </div>
+              </li>
+              <li>
+                <span class="step-number">03</span>
+                <div>
+                  <span class="step-label">Run your application</span>
+                  <code><b>$</b> silex run Main.sx</code>
+                </div>
+              </li>
+            </ol>
+          </div>
         </div>
       </section>
 
