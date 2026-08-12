@@ -13,12 +13,11 @@ Configure the same SSH settings described by the Silex Registry deployment:
 The default site root is `/srv/silex/website`. The deployment account needs
 write access to that directory but does not need root access.
 
-GitHub Pages remains enabled during migration. Remove `pages.yml`, the legacy
-`registry/` copy, and `scripts/build-registry.mjs` only after all of these are
-true:
+GitHub Pages remains enabled during migration. Remove `pages.yml` only after all
+of these are true:
 
 1. both website and registry releases exist on the VPS;
-2. the web server routes `/registry/*` to the registry release root;
-3. `https://silex-lang.org/registry/v1/index.json` and the site pass smoke tests;
+2. `registry.silex-lang.org` serves the independent registry release root;
+3. the registry URL and the site pass smoke tests;
 4. `silex install STD` succeeds against the production URL;
 5. DNS rollback remains available during the observation window.
