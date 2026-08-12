@@ -1,37 +1,21 @@
-# Silex website and package registry
+# Silex website
 
-This repository publishes the minimal Silex website and the versioned public
-package registry through GitHub Pages.
+This repository owns the Silex website. GitHub Pages remains the production
+host during the VPS migration:
 
 - Website: `https://matanek.github.io/Silex-Website/`
-- Registry v1: `https://matanek.github.io/Silex-Website/registry/v1/index.json`
+- Production domain: `https://silex-lang.org/`
 
-Package archives remain owned and published by their respective GitHub
-repositories. The registry contains their immutable release URLs, compatibility
-ranges, and SHA-256 checksums.
+The public package registry now has its own repository at
+`https://github.com/Matanek/Silex-Registry`. The legacy registry copy remains
+here temporarily so the current GitHub Pages deployment keeps serving existing
+Silex clients until the VPS cutover is complete.
 
-## Registry layout
+## Migration status
 
-Each published version has its own immutable manifest. Publishing one package
-does not modify another package's files. Per-package indexes are generated in
-the GitHub Pages artifact and are never committed.
+`pages.yml` continues to publish the site and legacy registry. The independent
+VPS workflow builds only the website and is disabled until the repository
+variable `VPS_DEPLOY_ENABLED` is set to `true`.
 
-```text
-registry/v1/
-  index.json
-  packages/
-    STD/
-      0.16.1.json
-    GFX/
-      0.23.1.json
-```
-
-The registry index only describes how clients resolve package URLs:
-
-- `packages/{package}/index.json` lists releases and their Silex compatibility;
-- `packages/{package}/{version}.json` describes one immutable release.
-
-A publication pull request adds only its version manifest. During deployment,
-`scripts/build-registry.mjs` validates every manifest and generates each
-package's `index.json`, ordered from the newest semantic version to the oldest.
-Silex can then select the newest release compatible with the local toolchain.
+See [deploy/README.md](deploy/README.md) for configuration and the cutover
+checklist.

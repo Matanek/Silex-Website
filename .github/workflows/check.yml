@@ -1,0 +1,23 @@
+name: Check website
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the website
+        uses: actions/checkout@v6
+
+      - name: Build the website
+        run: node scripts/build-site.mjs dist
+
+      - name: Verify the website entry point
+        run: test -f dist/index.html
