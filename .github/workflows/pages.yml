@@ -28,10 +28,17 @@ jobs:
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
+      - name: Build the static website and registry indexes
+        run: |
+          mkdir -p _site
+          cp index.html styles.css .nojekyll _site/
+          cp -R registry _site/
+          node scripts/build-registry.mjs _site/registry/v1
+
       - name: Upload the static website
         uses: actions/upload-pages-artifact@v4
         with:
-          path: .
+          path: _site
 
       - name: Deploy GitHub Pages
         id: deployment

@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "endpoints": {
-    "latest": "packages/{package}/latest.json",
-    "release": "packages/{package}/{version}.json"
+    "releases": "packages/{package}/index.json",
+    "manifest": "packages/{package}/{version}.json"
   }
 }
