@@ -119,8 +119,13 @@ h1 {
   max-width: 740px;
   margin-bottom: 24px;
   font-size: clamp(3.5rem, 7vw, 6.8rem);
-  line-height: 0.93;
-  letter-spacing: -0.07em;
+  line-height: 0.9;
+  letter-spacing: -0.045em;
+}
+
+h1 span {
+  display: block;
+  white-space: nowrap;
 }
 
 .lede {
@@ -539,7 +544,7 @@ footer a {
   }
 
   h1 {
-    font-size: clamp(3.2rem, 16vw, 5rem);
+    font-size: clamp(2.7rem, 13.5vw, 5rem);
   }
 
   .hero {
