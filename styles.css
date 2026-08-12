@@ -457,7 +457,7 @@ pre {
 
 .package {
   display: grid;
-  grid-template-columns: 140px 1fr auto;
+  grid-template-columns: 140px 1fr;
   gap: 24px;
   align-items: center;
   min-height: 92px;
@@ -478,14 +478,9 @@ pre {
   font-weight: 700;
 }
 
-.package-description,
-.package-version {
+.package-description {
   color: var(--muted);
   font-size: 0.9rem;
-}
-
-.package-version {
-  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
 }
 
 footer {
@@ -583,10 +578,6 @@ footer a {
     grid-template-columns: 80px 1fr;
     gap: 10px 14px;
     padding: 18px 0;
-  }
-
-  .package-version {
-    grid-column: 2;
   }
 
   footer {
