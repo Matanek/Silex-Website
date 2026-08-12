@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta
+      name="description"
+      content="Silex is an experimental native language and toolchain for code-first game and graphical application development."
+    >
+    <meta name="theme-color" content="#0c0c0d">
+    <title>Silex — Native, code-first development</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="Silex home">
+        <span class="brand-mark" aria-hidden="true">S</span>
+        <span>Silex</span>
+      </a>
+      <nav aria-label="Primary navigation">
+        <a href="#install">Install</a>
+        <a href="#packages">Packages</a>
+        <a href="https://github.com/Matanek/Silex">GitHub</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow">Experimental native language</p>
+          <h1 id="hero-title">From source to a native application.</h1>
+          <p class="lede">
+            Silex is a code-first language and toolchain built for game and
+            graphical application development. It combines a modern language,
+            native compilation and source packages in one focused workflow.
+          </p>
+          <div class="actions">
+            <a class="button button-primary" href="#install">Install Silex</a>
+            <a class="button button-secondary" href="https://github.com/Matanek/Silex">View the source</a>
+          </div>
+        </div>
+
+        <div class="code-window" aria-label="Silex code example">
+          <div class="code-titlebar">
+            <span></span><span></span><span></span>
+            <strong>Main.sx</strong>
+          </div>
+          <pre><code><span class="keyword">func</span> answer() <span class="type">int</span> {
+    <span class="keyword">return</span> 40 + 2
+}
+
+<span class="keyword">func</span> main() {
+    print(answer())
+}</code></pre>
+          <div class="terminal-line"><span>$</span> silex run Main.sx <strong>→ 42</strong></div>
+        </div>
+      </section>
+
+      <section class="principles" aria-label="Silex principles">
+        <article>
+          <span class="number">01</span>
+          <h2>Code-first</h2>
+          <p>The project remains readable, searchable and controllable from source files and the command line.</p>
+        </article>
+        <article>
+          <span class="number">02</span>
+          <h2>Native</h2>
+          <p>The compiler emits native applications without generating C or C++ as an intermediate step.</p>
+        </article>
+        <article>
+          <span class="number">03</span>
+          <h2>Package-oriented</h2>
+          <p>Reusable capabilities are distributed as versioned source packages with explicit compatibility.</p>
+        </article>
+      </section>
+
+      <section class="section install" id="install" aria-labelledby="install-title">
+        <div class="section-heading">
+          <p class="eyebrow">Start here</p>
+          <h2 id="install-title">Install Silex</h2>
+          <p>The standalone compiler does not require Zig or Git on the developer machine.</p>
+        </div>
+
+        <div class="install-grid">
+          <article class="install-card">
+            <div class="platform">
+              <h3>macOS</h3>
+              <span>Apple Silicon</span>
+            </div>
+            <pre><code>curl -fsSL https://raw.githubusercontent.com/Matanek/Silex/main/install.sh | sh</code></pre>
+          </article>
+
+          <article class="install-card">
+            <div class="platform">
+              <h3>Linux</h3>
+              <span>x64</span>
+            </div>
+            <pre><code>curl -fsSL https://raw.githubusercontent.com/Matanek/Silex/main/install.sh | sh</code></pre>
+          </article>
+
+          <article class="install-card">
+            <div class="platform">
+              <h3>Windows</h3>
+              <span>x64 · PowerShell</span>
+            </div>
+            <pre><code>irm https://raw.githubusercontent.com/Matanek/Silex/main/install.ps1 | iex</code></pre>
+          </article>
+        </div>
+
+        <div class="verify">
+          <span>Verify the installation</span>
+          <code>silex --version</code>
+        </div>
+      </section>
+
+      <section class="section packages" id="packages" aria-labelledby="packages-title">
+        <div class="section-heading">
+          <p class="eyebrow">Official packages</p>
+          <h2 id="packages-title">A small foundation, ready to grow.</h2>
+          <p>The first registry contains the standard package and the graphical application stack.</p>
+        </div>
+
+        <div class="package-list">
+          <a class="package" href="https://github.com/Matanek/Silex-Lib-STD">
+            <span class="package-name">STD</span>
+            <span class="package-description">The standard package for Silex applications.</span>
+            <span class="package-version">0.16.1</span>
+          </a>
+          <a class="package" href="https://github.com/Matanek/Silex-Lib-GFX">
+            <span class="package-name">GFX</span>
+            <span class="package-description">2D, 3D, GPU and WebView capabilities for native applications.</span>
+            <span class="package-version">0.23.1</span>
+          </a>
+        </div>
+
+        <p class="registry-link">
+          Machine-readable registry:
+          <a href="registry/v1/index.json"><code>/registry/v1/index.json</code></a>
+        </p>
+      </section>
+    </main>
+
+    <footer>
+      <span>Silex is experimental software.</span>
+      <a href="https://github.com/Matanek/Silex/blob/main/LICENSE">Apache-2.0 with LLVM exception</a>
+    </footer>
+  </body>
+</html>
