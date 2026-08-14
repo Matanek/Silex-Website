@@ -9,7 +9,7 @@
     >
     <meta name="theme-color" content="#0c0c0d">
     <title>Silex — Modern Code. Native Power.</title>
-    <link rel="stylesheet" href="styles.css?v=5">
+    <link rel="stylesheet" href="styles.css?v=6">
   </head>
   <body>
     <header class="site-header">
@@ -22,6 +22,7 @@
         <a href="#install">Install</a>
         <a href="#zed">Zed</a>
         <a href="#packages">Packages</a>
+        <a href="https://registry.silex-lang.org/">Registry</a>
         <a href="https://github.com/Matanek/Silex">GitHub</a>
       </nav>
     </header>
@@ -29,7 +30,14 @@
     <main id="top">
       <section class="hero" aria-labelledby="hero-title">
         <div class="hero-copy">
-          <p class="eyebrow">Modern native language</p>
+          <div class="hero-meta">
+            <p class="eyebrow">Modern native language</p>
+            <a
+              class="version-badge"
+              data-silex-version="{{SILEX_VERSION}}"
+              href="https://github.com/Matanek/Silex/releases/tag/v{{SILEX_VERSION}}"
+            >Latest release <strong>v{{SILEX_VERSION}}</strong></a>
+          </div>
           <h1 id="hero-title"><span>Modern Code</span><span>Native Power</span></h1>
           <p class="lede">
             Silex is a simple, modern language for games and native

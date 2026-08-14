@@ -10,6 +10,19 @@ The public package registry lives in its own repository at
 `https://github.com/Matanek/Silex-Registry` and is served independently from
 `https://registry.silex-lang.org/`.
 
+## Current Silex release
+
+The home page displays the latest published Silex version. The Pages workflow
+resolves it from the latest GitHub release during regular deployments and its
+daily synchronization run.
+
+After publishing a tagged release, the Silex release workflow can request an
+immediate website rebuild. Configure a fine-grained personal access token as
+the `WEBSITE_DISPATCH_TOKEN` secret in the `Matanek/Silex` repository. Scope
+the token to `Matanek/Silex-Website` with write access to repository contents.
+If the secret is absent, publishing still succeeds and the daily Pages build
+provides the fallback synchronization.
+
 ## Documentation
 
 `Silex/Docs` remains the source of truth for documentation because it must stay

@@ -43,8 +43,16 @@ if (htmlFiles.length !== rawMarkdownFiles.length + 1) {
 }
 
 const homepage = await readFile(join(outputRoot, "index.html"), "utf8");
+if (homepage.includes("{{SILEX_VERSION}}")) {
+  throw new Error("homepage contains an unresolved Silex version placeholder");
+}
+const version = /data-silex-version="(\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?)"/.exec(homepage)?.[1];
+if (!version || !homepage.includes(`https://github.com/Matanek/Silex/releases/tag/v${version}`)) {
+  throw new Error("homepage is missing the current Silex release link");
+}
 for (const expected of [
   'id="zed"',
+  "https://registry.silex-lang.org/",
   "https://github.com/zed-industries/extensions/pull/7190",
   "git clone https://github.com/Matanek/Silex-Extension-Zed.git",
   "zed: install dev extension",

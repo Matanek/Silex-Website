@@ -108,6 +108,42 @@ nav a:focus-visible {
   text-transform: uppercase;
 }
 
+.hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+  margin-bottom: 16px;
+}
+
+.hero-meta .eyebrow {
+  margin-bottom: 0;
+}
+
+.version-badge {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  padding: 4px 9px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: 0.7rem;
+  text-decoration: none;
+  transition: border-color 150ms ease, color 150ms ease;
+}
+
+.version-badge strong {
+  color: var(--text);
+}
+
+.version-badge:hover,
+.version-badge:focus-visible {
+  border-color: var(--muted);
+  color: var(--text);
+}
+
 h1,
 h2,
 h3,

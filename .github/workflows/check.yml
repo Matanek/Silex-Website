@@ -34,6 +34,7 @@ jobs:
       - name: Build the website
         env:
           SILEX_DOCS_ROOT: _sources/Silex/Docs
+          SILEX_SOURCE_ROOT: _sources/Silex
         run: npm run build
 
       - name: Check generated pages and links

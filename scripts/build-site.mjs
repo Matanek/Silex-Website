@@ -4,8 +4,23 @@ import MarkdownIt from "markdown-it";
 
 const outputRoot = resolve(process.argv[2] ?? "dist");
 const docsRoot = resolve(process.env.SILEX_DOCS_ROOT ?? "../Silex/Docs");
+const sourceRoot = resolve(process.env.SILEX_SOURCE_ROOT ?? "../Silex");
 const siteUrl = (process.env.SILEX_SITE_URL ?? "https://silex-lang.org").replace(/\/$/, "");
 const sourceUrl = "https://github.com/Matanek/Silex/blob/main/Docs";
+
+async function resolveSilexVersion() {
+  const configured = process.env.SILEX_VERSION?.trim();
+  const manifest = configured
+    ? null
+    : await readFile(join(sourceRoot, "Toolchain", "build.zig.zon"), "utf8");
+  const version = configured ?? /\.version\s*=\s*"([^"]+)"/.exec(manifest)?.[1];
+  if (!version || !/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$/.test(version)) {
+    throw new Error("Silex version must be a semantic version");
+  }
+  return version;
+}
+
+const silexVersion = await resolveSilexVersion();
 
 const categoryOrder = new Map([
   ["Getting-started", 10],
@@ -203,7 +218,7 @@ function renderDocument(document, index) {
     <meta name="theme-color" content="#0c0c0d">
     <link rel="canonical" href="${canonical}">
     <title>${escapeHtml(document.title)} — Silex documentation</title>
-    <link rel="stylesheet" href="/styles.css?v=5">
+    <link rel="stylesheet" href="/styles.css?v=6">
     <link rel="stylesheet" href="/docs.css?v=1">
   </head>
   <body class="docs-body">
@@ -244,9 +259,17 @@ function renderDocument(document, index) {
 
 await rm(outputRoot, { recursive: true, force: true });
 await mkdir(outputRoot, { recursive: true });
-for (const file of ["index.html", "styles.css", "docs.css", ".nojekyll"]) {
+for (const file of ["styles.css", "docs.css", ".nojekyll"]) {
   await cp(resolve(file), resolve(outputRoot, file));
 }
+const homepageTemplate = await readFile(resolve("index.html"), "utf8");
+if (!homepageTemplate.includes("{{SILEX_VERSION}}")) {
+  throw new Error("homepage is missing the Silex version placeholder");
+}
+await writeFile(
+  join(outputRoot, "index.html"),
+  homepageTemplate.replaceAll("{{SILEX_VERSION}}", silexVersion),
+);
 
 await cp(docsRoot, join(outputRoot, "docs", "raw"), { recursive: true });
 for (const [index, document] of orderedDocuments.entries()) {
