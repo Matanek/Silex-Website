@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Psr\Http\Message\ResponseInterface;
 use Silex\Web\ApplicationFactory;
 use Silex\Web\Documentation\DocumentRepository;
+use Silex\Web\Ecosystem\ReleaseNotesRepository;
 use Silex\Web\Ecosystem\SilexVersionResolver;
 use Silex\Web\Rendering\MarkdownRenderer;
 use Slim\Psr7\Factory\ServerRequestFactory;
@@ -13,6 +14,7 @@ $root = dirname(__DIR__);
 putenv('SILEX_DOCUMENTATION_ROOT=' . $root . '/tests/fixtures/Silex-Documentation');
 putenv('SILEX_REGISTRY_ROOT=' . $root . '/tests/fixtures/Silex-Registry');
 putenv('SILEX_PACKAGES_ROOT=' . $root . '/tests/fixtures/Packages');
+putenv('SILEX_SOURCE_ROOT=' . $root . '/tests/fixtures/Silex');
 putenv('SILEX_VERSION=9.8.7');
 
 $phpFiles = [];
@@ -200,6 +202,29 @@ $assert(!str_contains($englishHomeBody, 'Why Silex?'), 'The redundant English pr
 $assert(str_contains($englishHomeBody, '<h2 id="showcase-title">Examples</h2>'), 'The English Silex showcase heading is missing.');
 $assert(str_contains($englishHomeBody, 'Canvas shapes and paths') && str_contains($englishHomeBody, 'Minesweeper — Setup'), 'The English showcase captions are missing.');
 $assert(!str_contains($englishHomeBody, 'Présente des métadonnées réutilisables'), 'The English package card must not display the French translation.');
+
+$frenchReleases = $handle('https://silex.test/fr/releases');
+$frenchReleasesBody = (string) $frenchReleases->getBody();
+$assert($frenchReleases->getStatusCode() === 200, 'French release notes must respond with HTTP 200.');
+$assert(str_contains($frenchReleasesBody, '<body class="release-notes-page">'), 'The release notes page theme is missing.');
+$assert(str_contains($frenchReleasesBody, '<h1 id="release-notes-title">Ce qui change dans Silex</h1>'), 'The French release-notes heading is missing.');
+$assert(str_contains($frenchReleasesBody, 'Silex 1.8.0') && !str_contains($frenchReleasesBody, 'Silex 1.0.0'), 'The first release page must contain only the newest eight versions.');
+$assert(str_contains($frenchReleasesBody, 'Impact et migration'), 'Release notes must explain upgrade impact.');
+$assert(str_contains($frenchReleasesBody, 'href="/fr/releases?page=2"'), 'Release notes must link to older versions.');
+$assert(str_contains($frenchReleasesBody, 'href="/en/releases"'), 'The release-notes language switch must preserve the first page.');
+
+$englishReleasePage = $handle('https://silex.test/en/releases?page=2');
+$englishReleasePageBody = (string) $englishReleasePage->getBody();
+$assert($englishReleasePage->getStatusCode() === 200, 'The second English release page must respond with HTTP 200.');
+$assert(str_contains($englishReleasePageBody, 'Silex 1.0.0') && !str_contains($englishReleasePageBody, 'Silex 1.8.0'), 'The second release page must contain only older versions.');
+$assert(str_contains($englishReleasePageBody, 'href="/en/releases"'), 'The second release page must link back to newer versions.');
+$assert(str_contains($englishReleasePageBody, 'href="/fr/releases?page=2"'), 'The language switch must preserve release pagination.');
+$assert($handle('https://silex.test/fr/releases?page=0')->getStatusCode() === 404, 'Invalid release pages must respond with HTTP 404.');
+$assert($handle('https://silex.test/fr/releases?page=3')->getStatusCode() === 404, 'Release pages past the end must respond with HTTP 404.');
+
+$releaseRepository = new ReleaseNotesRepository($root . '/tests/fixtures/Silex');
+$assert(count($releaseRepository->releases('fr')) === 9, 'The complete French release inventory must be available to pagination.');
+$assert(count($releaseRepository->releases('en')) === 9, 'The complete English release inventory must be available to pagination.');
 
 $frenchDocumentation = $handle('https://silex.test/fr/docs');
 $frenchDocumentationBody = (string) $frenchDocumentation->getBody();

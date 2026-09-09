@@ -5,13 +5,15 @@ deployment is available at <https://silex-lang.org/>; the historical
 <https://silex.nekmata.com/> address serves the same immutable release.
 
 The website renders the public language and tool documentation owned by
-`Matanek/Silex-Documentation`. It must not become a second editable copy of
-those Markdown sources.
+`Matanek/Silex-Documentation` and the bilingual release notes owned by
+`Matanek/Silex`. It must not become a second editable copy of those Markdown
+sources.
 
 In a Silex workspace checkout, the application automatically reads the sibling
-`Silex-Documentation/`, `Silex-Registry/`, and `Packages/` directories.
-Override those sources for another environment with
-`SILEX_DOCUMENTATION_ROOT`, `SILEX_REGISTRY_ROOT`, and `SILEX_PACKAGES_ROOT`.
+`Silex-Documentation/`, `Silex/`, `Silex-Registry/`, and `Packages/`
+directories. Override those sources for another environment with
+`SILEX_DOCUMENTATION_ROOT`, `SILEX_SOURCE_ROOT`, `SILEX_REGISTRY_ROOT`, and
+`SILEX_PACKAGES_ROOT`.
 The `/fr/` and `/en/` route trees read the mirrored `FR/` and `EN/`
 documentation trees. The root route uses the saved preference, then the
 browser language, and exposes a switch that preserves the current page.
@@ -27,6 +29,13 @@ repository. The browser bundle uses Shiki to highlight `sx` Markdown fences
 from that grammar without maintaining a second editable lexer in this
 repository. Local workspace sources keep priority so Herd reflects live
 documentation and manifest changes without rebuilding that snapshot.
+
+The `/fr/releases` and `/en/releases` routes paginate the canonical Silex
+release notes. A release candidate must add matching French and English entries
+with an explicit upgrade rationale, change list, and migration impact. The
+Silex release workflow validates those entries and also uses the English entry
+as the GitHub Release body. Its existing `silex-released` dispatch then rebuilds
+the site snapshot automatically.
 
 The deployment runs for website pushes, manual requests, ecosystem content
 dispatches, and Silex releases. Its immutable release identifier combines the

@@ -66,6 +66,18 @@ body.registry-page {
     background: var(--color-white);
 }
 
+body.release-notes-page {
+    color-scheme: light;
+    --background: var(--color-white);
+    --surface: var(--color-gray-50);
+    --line: var(--color-gray-200);
+    --text: var(--color-gray-950);
+    --muted: var(--color-gray-600);
+    --accent: var(--color-sky-400);
+    --accent-ink: var(--color-gray-950);
+    background: var(--color-white);
+}
+
 a { color: inherit; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 
@@ -85,6 +97,10 @@ main,
     width: 100%;
     max-width: none;
     margin: 0;
+}
+
+.release-notes-page main {
+    width: min(calc(100% - 40px), 940px);
 }
 
 .section-container {
@@ -313,6 +329,25 @@ h1, h2, h3, p { margin-top: 0; }
 .package-card-links a span { color: var(--accent); }
 .content-unavailable { padding: 30px; border: 1px solid var(--line); color: var(--muted); }
 
+.release-notes-index { padding: 100px 0 130px; }
+.release-notes-heading { max-width: 820px; margin-bottom: 72px; }
+.release-notes-heading h1 { margin-bottom: 24px; font-size: clamp(3rem, 6.5vw, 5.8rem); line-height: 0.94; letter-spacing: -0.05em; }
+.release-notes-heading > p:last-child { max-width: 700px; color: var(--muted); font-size: 1.08rem; text-wrap: pretty; }
+.release-notes-list { border-top: 1px solid var(--line); }
+.release-note { padding: 54px 0 62px; border-bottom: 1px solid var(--line); }
+.release-note-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 28px; margin-bottom: 34px; }
+.release-note-header h2 { margin: 0; font-size: clamp(2rem, 4vw, 3.15rem); line-height: 1; letter-spacing: -0.04em; }
+.release-note-header > a { margin-top: 24px; color: var(--color-sky-700); font-size: 0.8rem; font-weight: 700; text-decoration: none; white-space: nowrap; }
+.release-note-header > a:hover { text-decoration: underline; text-underline-offset: 4px; }
+.release-note-date { margin-bottom: 10px; color: var(--color-gray-500); font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: 0.7rem; text-transform: uppercase; }
+.release-note-body h3 { margin-top: 32px; }
+.release-note-body h3:first-child { margin-top: 0; }
+.release-note-body > :last-child { margin-bottom: 0; }
+.release-pagination { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 24px; align-items: center; padding-top: 34px; color: var(--muted); font-size: 0.78rem; }
+.release-pagination > :last-child { text-align: right; }
+.release-pagination a { color: var(--color-sky-700); font-weight: 700; text-decoration: none; }
+.release-pagination a:hover { text-decoration: underline; text-underline-offset: 4px; }
+
 .showcase-heading { margin-bottom: 64px; }
 .home-page .showcase { color-scheme: dark; --surface: var(--color-gray-900); --line: var(--color-gray-800); --text: var(--color-gray-100); --muted: var(--color-gray-400); --accent: var(--color-sky-400); background: var(--color-gray-950); color: var(--text); }
 .showcase-heading h2 { max-width: 680px; margin-bottom: 0; }
@@ -495,6 +530,13 @@ body.showcase-lightbox-open { overflow: hidden; }
     .packages-index { padding: 72px 0 90px; }
     .packages-index-heading { margin-bottom: 44px; }
     .package-catalog { grid-template-columns: 1fr; }
+    .release-notes-index { padding: 72px 0 90px; }
+    .release-notes-heading { margin-bottom: 48px; }
+    .release-note { padding: 40px 0 48px; }
+    .release-note-header { flex-direction: column; gap: 16px; }
+    .release-note-header > a { margin-top: 0; white-space: normal; }
+    .release-pagination { grid-template-columns: 1fr 1fr; }
+    .release-pagination > span:nth-child(2) { grid-column: 1 / -1; grid-row: 1; text-align: center; }
     .showcase-heading { margin-bottom: 42px; }
     .showcase-grid { grid-template-columns: minmax(0, 1fr); }
     .showcase-card { aspect-ratio: auto; }

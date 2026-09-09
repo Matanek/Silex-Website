@@ -1,0 +1,50 @@
+{% extends 'layout.twig' %}
+
+{% block title %}{{ locale == 'fr' ? 'Nouveautés de Silex' : 'What’s new in Silex' }}{% endblock %}
+{% block description %}{{ locale == 'fr' ? 'Découvrez les nouveautés, les changements et l’impact de chaque version de Silex.' : 'Review the features, changes, and upgrade impact of every Silex release.' }}{% endblock %}
+{% block body_class %}release-notes-page{% endblock %}
+
+{% block content %}
+<section class="release-notes-index" aria-labelledby="release-notes-title">
+    <header class="release-notes-heading">
+        <p class="eyebrow">{{ locale == 'fr' ? 'Journal des versions' : 'Release notes' }}</p>
+        <h1 id="release-notes-title">{{ locale == 'fr' ? 'Ce qui change dans Silex' : 'What changes in Silex' }}</h1>
+        <p>{{ locale == 'fr' ? 'Pour chaque version, retrouvez ce qu’elle apporte, les projets concernés et les éventuelles étapes de migration.' : 'For every release, see what it brings, which projects are affected, and any migration steps.' }}</p>
+    </header>
+
+    {% if releases is empty %}
+        <p class="content-unavailable">{{ locale == 'fr' ? 'Aucune version publiée n’est disponible.' : 'No published release is available.' }}</p>
+    {% else %}
+        <div class="release-notes-list">
+            {% for release in releases %}
+                <article class="release-note" aria-labelledby="release-{{ release.version|replace({'.': '-'}) }}">
+                    <header class="release-note-header">
+                        <div>
+                            <p class="release-note-date"><time datetime="{{ release.date }}">{{ release.display_date }}</time></p>
+                            <h2 id="release-{{ release.version|replace({'.': '-'}) }}">Silex {{ release.version }}</h2>
+                        </div>
+                        <a href="{{ release.url }}">{{ locale == 'fr' ? 'Voir la release GitHub' : 'View GitHub release' }} <span aria-hidden="true">↗</span></a>
+                    </header>
+                    <div class="release-note-body prose-silex">{{ release.html|raw }}</div>
+                </article>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if total_pages > 1 %}
+        <nav class="release-pagination" aria-label="{{ locale == 'fr' ? 'Pagination des versions' : 'Release pagination' }}">
+            {% if page > 1 %}
+                <a rel="prev" href="/{{ locale }}/releases{{ page == 2 ? '' : '?page=' ~ (page - 1) }}">← {{ locale == 'fr' ? 'Versions plus récentes' : 'Newer releases' }}</a>
+            {% else %}
+                <span></span>
+            {% endif %}
+            <span>{{ locale == 'fr' ? 'Page' : 'Page' }} {{ page }} {{ locale == 'fr' ? 'sur' : 'of' }} {{ total_pages }}</span>
+            {% if page < total_pages %}
+                <a rel="next" href="/{{ locale }}/releases?page={{ page + 1 }}">{{ locale == 'fr' ? 'Versions plus anciennes' : 'Older releases' }} →</a>
+            {% else %}
+                <span></span>
+            {% endif %}
+        </nav>
+    {% endif %}
+</section>
+{% endblock %}

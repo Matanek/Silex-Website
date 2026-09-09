@@ -1,4 +1,4 @@
-import { mkdir, readFile, readdir, rm } from "node:fs/promises";
+import { mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import { normalizePackageDescription } from "./package-description.mjs";
@@ -43,6 +43,56 @@ function latestVersionTag(repository) {
     return latest;
 }
 
+function compareVersion(left, right) {
+    return left.major - right.major || left.minor - right.minor || left.patch - right.patch;
+}
+
+function releasedChangelog(source, latestVersion, label) {
+    const headings = [...source.matchAll(/^## \[(\d+)\.(\d+)\.(\d+)\] - \d{4}-\d{2}-\d{2}[ \t]*$/gm)];
+    const selected = headings.filter((heading) => compareVersion({
+        major: Number(heading[1]),
+        minor: Number(heading[2]),
+        patch: Number(heading[3]),
+    }, latestVersion) <= 0);
+    if (!selected.some((heading) => Number(heading[1]) === latestVersion.major
+        && Number(heading[2]) === latestVersion.minor
+        && Number(heading[3]) === latestVersion.patch)) {
+        throw new Error(`${label} does not describe published ${latestVersion.tag}`);
+    }
+
+    const prefix = source.slice(0, headings[0]?.index ?? source.length).trimEnd();
+    const sections = selected.map((heading) => {
+        const index = headings.indexOf(heading);
+        const end = headings[index + 1]?.index ?? source.length;
+        return source.slice(heading.index, end).trim();
+    });
+
+    return `${prefix}\n\n${sections.join("\n\n")}\n`;
+}
+
+async function ensureReleaseNotes(silexRoot, repository, latestVersion) {
+    try {
+        await Promise.all([
+            readFile(join(silexRoot, "CHANGELOG.fr.md")),
+            readFile(join(silexRoot, "CHANGELOG.md")),
+        ]);
+        return;
+    } catch {
+        const fetch = spawnSync("git", ["-C", silexRoot, "fetch", "--quiet", "--depth=1", "origin", "refs/heads/main"]);
+        if (fetch.status !== 0) throw new Error(`Unable to bootstrap release notes from ${repository}`);
+    }
+
+    for (const filename of ["CHANGELOG.fr.md", "CHANGELOG.md"]) {
+        const result = spawnSync("git", ["-C", silexRoot, "show", `FETCH_HEAD:${filename}`], { encoding: "utf8" });
+        if (result.status !== 0) throw new Error(`Unable to read ${filename} from ${repository} main`);
+        await writeFile(
+            join(silexRoot, filename),
+            releasedChangelog(result.stdout, latestVersion, filename),
+        );
+    }
+    console.log(`Bootstrapped release notes for ${latestVersion.tag} from Silex main`);
+}
+
 await rm(outputRoot, { recursive: true, force: true });
 await mkdir(outputRoot, { recursive: true });
 
@@ -50,7 +100,9 @@ const silexRepository = "https://github.com/Matanek/Silex.git";
 const silexVersion = latestVersionTag(silexRepository);
 const documentationReference = process.env.SILEX_DOCUMENTATION_REF ?? `release/${silexVersion.major}.${silexVersion.minor}`;
 
-clone(silexRepository, resolve(outputRoot, "Silex"), silexVersion.tag);
+const silexRoot = resolve(outputRoot, "Silex");
+clone(silexRepository, silexRoot, silexVersion.tag);
+await ensureReleaseNotes(silexRoot, silexRepository, silexVersion);
 clone("https://github.com/Matanek/Silex-Documentation.git", resolve(outputRoot, "Silex-Documentation"), documentationReference);
 clone("https://github.com/Matanek/Silex-Extension-VSCode.git", resolve(outputRoot, "Silex-Extension-VSCode"));
 clone("https://github.com/Matanek/Silex-Registry.git", resolve(outputRoot, "Silex-Registry"));

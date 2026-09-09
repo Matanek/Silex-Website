@@ -13,6 +13,11 @@ const vscodeExtensionRoot = resolve(process.argv[7] ?? "../Silex-Extension-VSCod
 const stagingRoot = `${outputRoot}.tmp-${process.pid}`;
 const packagePattern = /^[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*$/;
 const repositoryPattern = /^https:\/\/github\.com\/[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+\.git$/;
+const releaseHeadingPattern = /^## \[(\d+\.\d+\.\d+)\] - (\d{4}-\d{2}-\d{2})[ \t]*$/gm;
+const releaseSections = {
+    fr: ["Pourquoi mettre à jour ?", "Changements", "Impact et migration"],
+    en: ["Why upgrade?", "Changes", "Impact and migration"],
+};
 
 async function exists(path) {
     try {
@@ -56,6 +61,51 @@ function gitValue(root, arguments_) {
     return result.status === 0 ? result.stdout.trim() : null;
 }
 
+function releaseInventory(source, locale, label) {
+    const headings = [...source.matchAll(releaseHeadingPattern)];
+    releaseHeadingPattern.lastIndex = 0;
+    if (headings.length === 0) throw new Error(`${label} contains no release entry`);
+
+    const inventory = [];
+    let previous = null;
+    const seen = new Set();
+    for (const [index, heading] of headings.entries()) {
+        const version = heading[1];
+        const date = heading[2];
+        if (seen.has(version)) throw new Error(`${label} repeats version ${version}`);
+        seen.add(version);
+        const semanticVersion = version.split(".").map(Number);
+        if (previous !== null && semanticVersion.find((part, partIndex) => part !== previous[partIndex]) !== undefined) {
+            const comparison = semanticVersion.findIndex((part, partIndex) => part !== previous[partIndex]);
+            if (semanticVersion[comparison] > previous[comparison]) {
+                throw new Error(`${label} entries must use descending semantic versions`);
+            }
+        }
+        previous = semanticVersion;
+        if (new Date(`${date}T00:00:00Z`).toISOString().slice(0, 10) !== date) {
+            throw new Error(`${label} has an invalid date for ${version}`);
+        }
+
+        const start = heading.index + heading[0].length;
+        const end = headings[index + 1]?.index ?? source.length;
+        const body = source.slice(start, end).trim();
+        const sectionHeadings = [...body.matchAll(/^### (.+?)[ \t]*$/gm)];
+        const sections = sectionHeadings.map((match) => match[1]);
+        if (JSON.stringify(sections) !== JSON.stringify(releaseSections[locale])) {
+            throw new Error(`${label} ${version} has an invalid release-note structure`);
+        }
+        for (const [sectionIndex, section] of sectionHeadings.entries()) {
+            const sectionEnd = sectionHeadings[sectionIndex + 1]?.index ?? body.length;
+            if (body.slice(section.index + section[0].length, sectionEnd).trim() === "") {
+                throw new Error(`${label} ${version} section '${section[1]}' is empty`);
+            }
+        }
+        inventory.push({ version, date });
+    }
+
+    return inventory;
+}
+
 const registryPackagesRoot = join(registryRoot, "registry/v1/packages");
 const registrationEntries = await readdir(registryPackagesRoot, { withFileTypes: true });
 const registrations = [];
@@ -90,6 +140,22 @@ try {
     if (documentCounts.en !== documentCounts.fr) {
         throw new Error(`The EN and FR documentation inventories differ (${documentCounts.en} vs ${documentCounts.fr})`);
     }
+
+    const frenchReleaseNotes = await readFile(join(silexRoot, "CHANGELOG.fr.md"), "utf8");
+    const englishReleaseNotes = await readFile(join(silexRoot, "CHANGELOG.md"), "utf8");
+    const frenchReleaseInventory = releaseInventory(frenchReleaseNotes, "fr", "CHANGELOG.fr.md");
+    const englishReleaseInventory = releaseInventory(englishReleaseNotes, "en", "CHANGELOG.md");
+    if (JSON.stringify(frenchReleaseInventory) !== JSON.stringify(englishReleaseInventory)) {
+        throw new Error("The French and English release-note inventories differ");
+    }
+    await mkdir(join(stagingRoot, "Silex"), { recursive: true });
+    await copyFile(join(silexRoot, "CHANGELOG.fr.md"), join(stagingRoot, "Silex/CHANGELOG.fr.md"));
+    await copyFile(join(silexRoot, "CHANGELOG.md"), join(stagingRoot, "Silex/CHANGELOG.md"));
+    const releaseNotesDigest = createHash("sha256")
+        .update(frenchReleaseNotes)
+        .update("\0")
+        .update(englishReleaseNotes)
+        .digest("hex");
 
     for (const registration of registrations) {
         const registrationDestination = join(stagingRoot, "Silex-Registry/registry/v1/packages", `${registration.name}.json`);
@@ -130,8 +196,9 @@ try {
     await writeFile(
         join(stagingRoot, "snapshot.json"),
         `${JSON.stringify({
-            schema: 2,
+            schema: 3,
             silex: { version, commit: gitValue(silexRoot, ["rev-parse", "HEAD"]), tag: gitValue(silexRoot, ["describe", "--tags", "--exact-match"]) },
+            release_notes: { releases: frenchReleaseInventory.length, digest: releaseNotesDigest },
             documentation: {
                 commit: gitValue(documentationRoot, ["rev-parse", "HEAD"]),
                 reference: gitValue(documentationRoot, ["branch", "--show-current"]),
@@ -152,7 +219,7 @@ try {
     await mkdir(dirname(outputRoot), { recursive: true });
     await rename(stagingRoot, outputRoot);
     await writeFile(join(dirname(outputRoot), "silex-version.txt"), `${version}\n`);
-    console.log(`Built Silex ${version} content: ${documentCounts.en} mirrored documents and ${packageMetadata.length} package descriptions`);
+    console.log(`Built Silex ${version} content: ${frenchReleaseInventory.length} releases, ${documentCounts.en} mirrored documents, and ${packageMetadata.length} package descriptions`);
 } catch (error) {
     await rm(stagingRoot, { recursive: true, force: true });
     throw error;

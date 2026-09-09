@@ -160,5 +160,8 @@ jobs:
             https://silex-lang.org/fr/packages \
             'https://github.com/Matanek/Silex-Lib-STD'
           wait_for_content \
+            https://silex-lang.org/fr/releases \
+            '<h1 id="release-notes-title">Ce qui change dans Silex</h1>'
+          wait_for_content \
             https://silex.nekmata.com/ \
             "Silex Web release: $SILEX_WEB_RELEASE"
