@@ -207,6 +207,7 @@ $frenchReleases = $handle('https://silex.test/fr/releases');
 $frenchReleasesBody = (string) $frenchReleases->getBody();
 $assert($frenchReleases->getStatusCode() === 200, 'French release notes must respond with HTTP 200.');
 $assert(str_contains($frenchReleasesBody, '<body class="release-notes-page">'), 'The release notes page theme is missing.');
+$assert(str_contains($frenchReleasesBody, '<section class="release-notes-hero"') && str_contains($frenchReleasesBody, '<div class="release-notes-hero-inner">'), 'Release notes must open with the compact dark hero.');
 $assert(str_contains($frenchReleasesBody, '<h1 id="release-notes-title">Ce qui change dans Silex</h1>'), 'The French release-notes heading is missing.');
 $assert(str_contains($frenchReleasesBody, 'Silex 1.8.0') && !str_contains($frenchReleasesBody, 'Silex 1.0.0'), 'The first release page must contain only the newest eight versions.');
 $assert(str_contains($frenchReleasesBody, 'Impact et migration'), 'Release notes must explain upgrade impact.');
@@ -238,6 +239,13 @@ $documentationNavigationPosition = strpos($navigationTemplate, '/docs');
 $showcaseScript = (string) file_get_contents($root . '/public/assets/showcase.js');
 $packageCardTemplate = (string) file_get_contents($root . '/templates/_package-card.twig');
 $snapshotBuilder = (string) file_get_contents($root . '/scripts/build-content-snapshot.mjs');
+$assert(
+    str_contains($sourceCss, '.release-notes-hero { color-scheme: dark;')
+        && str_contains($sourceCss, 'background: radial-gradient(circle at 78% 6%')
+        && str_contains($sourceCss, '.release-notes-hero-inner { padding: 72px 0 68px; }')
+        && str_contains($sourceCss, '.release-notes-index { padding: 72px 0 130px; }'),
+    'Release notes must reuse the index hero atmosphere in a compact header before the white journal.',
+);
 $assert(
     $releaseNavigationPosition !== false
         && $documentationNavigationPosition !== false

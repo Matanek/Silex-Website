@@ -5,13 +5,17 @@
 {% block body_class %}release-notes-page{% endblock %}
 
 {% block content %}
-<section class="release-notes-index" aria-labelledby="release-notes-title">
-    <header class="release-notes-heading">
-        <p class="eyebrow">{{ locale == 'fr' ? 'Journal des versions' : 'Release notes' }}</p>
-        <h1 id="release-notes-title">{{ locale == 'fr' ? 'Ce qui change dans Silex' : 'What changes in Silex' }}</h1>
-        <p>{{ locale == 'fr' ? 'Pour chaque version, retrouvez ce qu’elle apporte, les projets concernés et les éventuelles étapes de migration.' : 'For every release, see what it brings, which projects are affected, and any migration steps.' }}</p>
-    </header>
+<section class="release-notes-hero" aria-labelledby="release-notes-title">
+    <div class="release-notes-hero-inner">
+        <header class="release-notes-heading">
+            <p class="eyebrow">{{ locale == 'fr' ? 'Journal des versions' : 'Release notes' }}</p>
+            <h1 id="release-notes-title">{{ locale == 'fr' ? 'Ce qui change dans Silex' : 'What changes in Silex' }}</h1>
+            <p>{{ locale == 'fr' ? 'Pour chaque version, retrouvez ce qu’elle apporte, les projets concernés et les éventuelles étapes de migration.' : 'For every release, see what it brings, which projects are affected, and any migration steps.' }}</p>
+        </header>
+    </div>
+</section>
 
+<section class="release-notes-index" aria-label="{{ locale == 'fr' ? 'Versions publiées' : 'Published releases' }}">
     {% if releases is empty %}
         <p class="content-unavailable">{{ locale == 'fr' ? 'Aucune version publiée n’est disponible.' : 'No published release is available.' }}</p>
     {% else %}
