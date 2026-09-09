@@ -232,9 +232,18 @@ $assert($frenchDocumentation->getStatusCode() === 200, 'French documentation mus
 $assert(str_contains($frenchDocumentationBody, '<body class="docs-page">'), 'Documentation pages must expose their fixed-sidebar layout class.');
 $sourceCss = (string) file_get_contents($root . '/assets/css/app.css');
 $navigationScript = (string) file_get_contents($root . '/public/assets/navigation.js');
+$navigationTemplate = (string) file_get_contents($root . '/templates/_site-navigation-links.twig');
+$releaseNavigationPosition = strpos($navigationTemplate, '/releases');
+$documentationNavigationPosition = strpos($navigationTemplate, '/docs');
 $showcaseScript = (string) file_get_contents($root . '/public/assets/showcase.js');
 $packageCardTemplate = (string) file_get_contents($root . '/templates/_package-card.twig');
 $snapshotBuilder = (string) file_get_contents($root . '/scripts/build-content-snapshot.mjs');
+$assert(
+    $releaseNavigationPosition !== false
+        && $documentationNavigationPosition !== false
+        && $releaseNavigationPosition < $documentationNavigationPosition,
+    'Release notes must remain the first link in the shared site navigation.',
+);
 $assert(
     !str_contains($packageCardTemplate, 'package.version')
         && !str_contains($snapshotBuilder, 'manifest.version')
