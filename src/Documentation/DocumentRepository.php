@@ -129,14 +129,14 @@ final readonly class DocumentRepository
             if (!is_string($name) || !$this->validPackageName($name) || basename($path) !== $name . '.json') {
                 throw new RuntimeException(sprintf('Registry entry "%s" has an invalid package name.', $path));
             }
-            if (!is_string($repository) || preg_match('#^https://github\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+(?:\.git)?$#', $repository) !== 1) {
+            if ($repository !== null && (!is_string($repository) || preg_match('#^https://github\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+(?:\.git)?$#', $repository) !== 1)) {
                 throw new RuntimeException(sprintf('Registry entry "%s" has an invalid repository.', $path));
             }
 
             $metadata = $this->packageMetadata($name, $locale);
             $packages[] = $metadata + [
                 'name' => $name,
-                'repository' => preg_replace('/\.git$/', '', $repository) ?? $repository,
+                'repository' => $repository === null ? null : (preg_replace('/\.git$/', '', $repository) ?? $repository),
             ];
         }
 

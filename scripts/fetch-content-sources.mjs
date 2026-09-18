@@ -1,11 +1,11 @@
-import { mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import { normalizePackageDescription } from "./package-description.mjs";
 
 const outputRoot = resolve(process.argv[2] ?? ".content");
 const packagePattern = /^[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*$/;
-const repositoryPattern = /^https:\/\/github\.com\/[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+\.git$/;
+const repositoryPattern = /^https:\/\/github\.com\/[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+(?:\.git)?$/;
 
 function clone(repository, destination, reference = null, sparse = false) {
     const arguments_ = ["-c", "advice.detachedHead=false", "clone", "--quiet", "--depth=1", "--filter=blob:none", "--single-branch"];
@@ -108,31 +108,26 @@ clone("https://github.com/Matanek/Silex-Extension-VSCode.git", resolve(outputRoo
 clone("https://github.com/Matanek/Silex-Registry.git", resolve(outputRoot, "Silex-Registry"));
 
 const registryPackagesRoot = resolve(outputRoot, "Silex-Registry/registry/v1/packages");
-const registrationEntries = await readdir(registryPackagesRoot, { withFileTypes: true });
-let packageCount = 0;
-for (const entry of registrationEntries.sort((left, right) => left.name.localeCompare(right.name, "en"))) {
-    if (!entry.isFile() || !entry.name.endsWith(".json")) continue;
-
-    const registrationPath = join(registryPackagesRoot, entry.name);
-    const registration = JSON.parse(await readFile(registrationPath, "utf8"));
-    const name = entry.name.slice(0, -5);
-    if (
-        registration.schema !== 1
-        || !packagePattern.test(name)
-        || registration.name !== name
-        || typeof registration.repository !== "string"
-        || !repositoryPattern.test(registration.repository)
-    ) {
-        throw new Error(`Registry entry '${entry.name}' has an invalid package contract`);
+const response = await fetch("https://registry.silex-lang.org/v2/catalog");
+if (!response.ok) throw new Error(`Unable to fetch published package catalog: HTTP ${response.status}`);
+const catalog = await response.json();
+if (catalog.schema !== 1 || !Array.isArray(catalog.packages)) throw new Error("Invalid published package catalog");
+await rm(registryPackagesRoot, { recursive: true, force: true });
+await mkdir(registryPackagesRoot, { recursive: true });
+const seen = new Set();
+for (const item of catalog.packages) {
+    if (!item || !packagePattern.test(item.name) || seen.has(item.name)
+        || normalizePackageDescription(item.description) === null
+        || (item.repository !== undefined && !repositoryPattern.test(item.repository))) {
+        throw new Error("Invalid published package metadata");
     }
-
-    const destination = resolve(outputRoot, "Packages", name);
-    clone(registration.repository, destination, null, true);
-    const manifest = JSON.parse(await readFile(join(destination, "Package.json"), "utf8"));
-    if (manifest.name !== name || normalizePackageDescription(manifest.description) === null) {
-        throw new Error(`Package '${name}' has no valid manifest description`);
-    }
-    packageCount += 1;
+    seen.add(item.name);
+    await writeFile(join(registryPackagesRoot, `${item.name}.json`), `${JSON.stringify({
+        schema: 1, name: item.name, ...(item.repository ? { repository: item.repository } : {}),
+    })}\n`);
+    const destination = resolve(outputRoot, "Packages", item.name);
+    await mkdir(destination, { recursive: true });
+    await writeFile(join(destination, "Package.json"), `${JSON.stringify({ name: item.name, description: item.description })}\n`);
 }
 
-console.log(`Fetched Silex ${silexVersion.tag}, documentation ${documentationReference}, the TextMate grammar, the registry, and ${packageCount} package manifests`);
+console.log(`Fetched Silex ${silexVersion.tag}, documentation ${documentationReference}, the TextMate grammar, and ${seen.size} published package descriptions`);

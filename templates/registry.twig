@@ -8,12 +8,12 @@
 <section class="registry-hero-section" aria-labelledby="registry-title">
 <div class="section-container registry-hero">
     <div class="registry-hero-copy">
-        <p class="eyebrow">{{ locale == 'fr' ? 'Registre public de packages · v1' : 'Public package registry · v1' }}</p>
+        <p class="eyebrow">{{ locale == 'fr' ? 'Registre public de packages · v2' : 'Public package registry · v2' }}</p>
         <h1 id="registry-title">{{ locale == 'fr' ? 'Construisez' : 'Build it' }}<br><span>{{ locale == 'fr' ? 'Publiez' : 'Release it' }}</span><br>{{ locale == 'fr' ? 'Partagez' : 'Share it' }}</h1>
         <p class="lede">{{ locale == 'fr' ? 'Silex grandit grâce aux logiciels qui fonctionnent. Améliorez le langage, renforcez ses packages ou publiez une capacité réutilisable.' : 'Silex grows through working software. Improve the language, strengthen its packages, or publish a reusable capability.' }}</p>
         <div class="actions">
-            <a class="button button-primary" href="#publish">{{ locale == 'fr' ? 'Enregistrer un package' : 'Register a package' }}</a>
-            <a class="button button-secondary" href="https://github.com/Matanek/Silex-Registry/pulls">{{ locale == 'fr' ? 'Suivre les inscriptions' : 'Track registrations' }}</a>
+            <a class="button button-primary" href="#publish">{{ locale == 'fr' ? 'Publier un package' : 'Publish a package' }}</a>
+            <a class="button button-secondary" href="/{{ locale }}/packages">{{ locale == 'fr' ? 'Voir les packages' : 'Browse packages' }}</a>
         </div>
     </div>
 
@@ -24,12 +24,12 @@
             <span>API</span>
         </div>
         <dl class="registry-facts">
-            <div><dt>Format</dt><dd>Static JSON</dd></div>
-            <div><dt>{{ locale == 'fr' ? 'Contrat' : 'Contract' }}</dt><dd>{{ locale == 'fr' ? 'Nom → dépôt Git' : 'Name → Git repository' }}</dd></div>
-            <div><dt>Versions</dt><dd>{{ locale == 'fr' ? 'Tags du dépôt' : 'Repository tags' }}</dd></div>
+            <div><dt>Format</dt><dd>JSON API</dd></div>
+            <div><dt>{{ locale == 'fr' ? 'Stockage' : 'Storage' }}</dt><dd>Cloudflare D1 + R2</dd></div>
+            <div><dt>Versions</dt><dd>{{ locale == 'fr' ? 'Instantanés immuables' : 'Immutable snapshots' }}</dd></div>
         </dl>
-        <a class="registry-endpoint" href="https://registry.silex-lang.org/v1/index.json">
-            <span>GET</span><code>/v1/index.json</code><b aria-hidden="true">→</b>
+        <a class="registry-endpoint" href="https://registry.silex-lang.org/v2/catalog">
+            <span>GET</span><code>/v2/catalog</code><b aria-hidden="true">→</b>
         </a>
     </aside>
 </div>
@@ -45,11 +45,11 @@
     {% set contributions = locale == 'fr' ? [
         ['01', 'Langage et toolchain', 'Améliorez les diagnostics, la sémantique, la compilation native, les outils ou les exemples qui prouvent une fonctionnalité.', 'Explorer Silex', 'https://github.com/Matanek/Silex'],
         ['02', 'Packages officiels', 'Renforcez la bibliothèque standard ou la pile applicative GFX avec des API publiques orientées intention.', 'Explorer les packages', '/' ~ locale ~ '/#packages'],
-        ['03', 'Packages communautaires', 'Regroupez une capacité utile, inscrivez son dépôt une fois, puis laissez le registre suivre ses tags Git.', 'Voir le parcours', '#publish']
+        ['03', 'Packages communautaires', 'Publiez un instantané local avec Silex ; un dépôt public peut servir de lien pour contribuer.', 'Voir le parcours', '#publish']
     ] : [
         ['01', 'Language & toolchain', 'Improve diagnostics, semantics, native compilation, tooling, or the examples that prove a feature works.', 'Explore Silex', 'https://github.com/Matanek/Silex'],
         ['02', 'Official packages', 'Strengthen the standard library or the GFX application stack through intention-oriented public APIs.', 'Explore packages', '/' ~ locale ~ '/#packages'],
-        ['03', 'Community packages', 'Package one useful capability, register its repository once, then let the registry follow its Git tags.', 'Read the release path', '#publish']
+        ['03', 'Community packages', 'Publish a local snapshot with Silex; a public repository can be linked for contributions.', 'Read the release path', '#publish']
     ] %}
     <div class="contribution-grid">
         {% for contribution in contributions %}
@@ -67,20 +67,20 @@
 <section class="registry-section registry-publish-section" id="publish" aria-labelledby="publish-title">
 <div class="section-container">
     <div class="registry-heading registry-heading-split publish-heading">
-        <div><p class="eyebrow section-tag">{{ locale == 'fr' ? 'Enregistrer un package' : 'Register a package' }}</p><h2 id="publish-title">{{ locale == 'fr' ? 'Enregistrez votre package' : 'Register your package' }}</h2></div>
-        <p>{% if locale == 'fr' %}La commande <code>silex register</code> ouvre l’unique proposition d’inscription du package. Une fois acceptée, le registre lit les versions dans les tags Git du dépôt : aucune nouvelle commande Silex ni pull request n’est nécessaire.{% else %}<code>silex register</code> opens the package’s single registry proposal. Once accepted, the registry reads releases from the repository’s Git tags: no new Silex command or pull request is required.{% endif %}</p>
+        <div><p class="eyebrow section-tag">{{ locale == 'fr' ? 'Publier un package' : 'Publish a package' }}</p><h2 id="publish-title">{{ locale == 'fr' ? 'Publiez votre package' : 'Publish your package' }}</h2></div>
+        <p>{% if locale == 'fr' %}Connectez-vous avec GitHub pour prouver votre identité, puis publiez les fichiers locaux avec <code>silex publish</code>. Le registre conserve l’archive et les artefacts sur Cloudflare. Aucun dépôt Git n’est requis.{% else %}Sign in with GitHub to verify your identity, then publish local files with <code>silex publish</code>. The registry stores the archive and artifacts on Cloudflare. No Git repository is required.{% endif %}</p>
     </div>
 
     {% set steps = locale == 'fr' ? [
-        ['01', 'Préparer le package', 'Définissez la version sémantique et la compatibilité Silex, puis commitez le contenu complet du package.', null, null],
-        ['02', 'Vérifier si nécessaire', 'Lancez', 'silex check chemin/du/Package', ' pour valider sans modification son contrat et le tag attendu.'],
-        ['03', 'Enregistrer le package', 'Lancez une seule fois', 'silex register chemin/du/Package', '. Silex propose le nom du package et son dépôt canonique au registre.'],
-        ['04', 'Créer un tag de version', 'Créez et poussez le tag', 'vMAJOR.MINOR.PATCH', ' correspondant. Aucune nouvelle pull request au registre n’est nécessaire.']
+        ['01', 'Préparer le package', 'Définissez son nom, sa version et la compatibilité Silex dans Package.json.', null, null],
+        ['02', 'Prévisualiser', 'Lancez', 'silex publish chemin/du/Package --dry-run', ' pour vérifier les fichiers et artefacts inclus.'],
+        ['03', 'Se connecter', 'Autorisez votre identité GitHub avec', 'silex login', '. La connexion dure 30 jours et peut être renouvelée lors d’une publication, au plus jusqu’à 90 jours.'],
+        ['04', 'Publier', 'Envoyez cet instantané avec', 'silex publish chemin/du/Package', '. Les utilisateurs l’installent ensuite depuis Cloudflare.']
     ] : [
-        ['01', 'Prepare the package', 'Set the semantic version and Silex compatibility, then commit the package’s complete contents.', null, null],
-        ['02', 'Check when useful', 'Run', 'silex check path/to/Package', ' to validate its contract and expected tag without changing anything.'],
-        ['03', 'Register the package', 'Run once', 'silex register path/to/Package', '. Silex proposes the package name and canonical repository to the registry.'],
-        ['04', 'Create a version tag', 'Create and push the matching', 'vMAJOR.MINOR.PATCH', ' tag. No additional registry pull request is required.']
+        ['01', 'Prepare the package', 'Set its name, version, and Silex compatibility in Package.json.', null, null],
+        ['02', 'Preview', 'Run', 'silex publish path/to/Package --dry-run', ' to inspect included files and artifacts.'],
+        ['03', 'Sign in', 'Authorize your GitHub identity with', 'silex login', '. Access lasts 30 days and can renew during publication, up to 90 days total.'],
+        ['04', 'Publish', 'Upload this snapshot with', 'silex publish path/to/Package', '. Users then install it from Cloudflare.']
     ] %}
     <div class="publish-layout">
         <ol class="release-steps">
@@ -92,29 +92,24 @@
             {% endfor %}
         </ol>
 
-        <div class="manifest-window" aria-label="{{ locale == 'fr' ? 'Enregistrer un package avec la ligne de commande Silex' : 'Register a package with the Silex command line' }}">
+        <div class="manifest-window" aria-label="{{ locale == 'fr' ? 'Publier un package avec la ligne de commande Silex' : 'Publish a package with the Silex command line' }}">
             <div class="registry-card-titlebar"><span class="file-mark" aria-hidden="true">$</span><strong>Example 1.0.0</strong></div>
-            <pre><code><span class="key">$</span> silex check Packages/Example
-<span class="value">silex: package Example@1.0.0 is valid;
-its release tag is v1.0.0</span>
+            <pre><code><span class="key">$</span> silex publish Packages/Example --dry-run
+<span class="value">silex: dry run for Example@1.0.0 (nothing uploaded)</span>
 
-<span class="key">$</span> silex register Packages/Example
-
-<span class="value">silex: submitted registration of Example
-for registry review</span>
-
-<span class="key">$</span> git tag v1.0.0
-<span class="key">$</span> git push origin v1.0.0</code></pre>
-            <a href="https://github.com/Matanek/Silex-Registry/blob/main/CONTRIBUTING.md">{{ locale == 'fr' ? 'Lire le contrat d’inscription' : 'Read the registration contract' }} <span aria-hidden="true">→</span></a>
+<span class="key">$</span> silex login
+<span class="key">$</span> silex publish Packages/Example
+<span class="value">silex: published Example@1.0.0</span></code></pre>
+            <a href="https://registry.silex-lang.org/v2/capabilities">{{ locale == 'fr' ? 'Vérifier le registre public' : 'Check the public registry' }} <span aria-hidden="true">→</span></a>
         </div>
     </div>
 
     <aside class="registry-review" aria-labelledby="registry-review-title">
         <div class="registry-review-copy">
-            <h3 class="eyebrow" id="registry-review-title">{{ locale == 'fr' ? 'Suivi des inscriptions' : 'Registration tracking' }}</h3>
-            <p>{% if locale == 'fr' %}<code>silex register</code> ouvre une pull request. Consultez-la pour vérifier son statut et les éventuelles revues.{% else %}<code>silex register</code> opens a pull request. Check it to follow its status and any reviews.{% endif %}</p>
+            <h3 class="eyebrow" id="registry-review-title">{{ locale == 'fr' ? 'Versions publiées' : 'Published versions' }}</h3>
+            <p>{% if locale == 'fr' %}Chaque version reste disponible même si le dépôt de développement disparaît. Un lien GitHub facultatif peut aider les personnes qui veulent contribuer.{% else %}Each version remains available even if its development repository disappears. An optional GitHub link can help contributors.{% endif %}</p>
         </div>
-        <a class="button button-secondary" href="https://github.com/Matanek/Silex-Registry/pulls">{{ locale == 'fr' ? 'Voir les pull requests' : 'View pull requests' }}</a>
+        <a class="button button-secondary" href="/{{ locale }}/packages">{{ locale == 'fr' ? 'Explorer les packages' : 'Browse packages' }}</a>
     </aside>
 </div>
 </section>

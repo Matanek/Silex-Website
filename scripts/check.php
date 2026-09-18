@@ -111,6 +111,7 @@ $assert(str_contains($homeBody, 'data-package-count="2"'), 'The home page packag
 $assert(str_contains($homeBody, 'href="/fr/#packages">Packages</a>'), 'The French navigation must link to the home page package catalog.');
 $assert(str_contains($homeBody, 'href="https://github.com/Matanek/Silex-Lib-Example"'), 'Package cards must link to their canonical repository.');
 $assert(str_contains($homeBody, 'class="package-card-repository"'), 'The package repository link must own the full-card interaction.');
+$assert(str_contains($homeBody, '<span class="package-card-name">Legacy</span>'), 'A published package without a source repository must remain visible.');
 $assert(str_contains($homeBody, 'Présente des métadonnées réutilisables pour un package Silex.'), 'French package cards must display their localized manifest description.');
 $assert(str_contains($homeBody, 'Uses one package description for every locale.'), 'Plain package descriptions must remain valid.');
 $assert(!str_contains($homeBody, 'v1.0.0'), 'Package cards must not expose a package version.');
@@ -438,7 +439,7 @@ $assert(substr_count($activeNavigationGuideBody, 'aria-current="page" data-curre
 $packages = $handle('https://silex.test/fr/packages');
 $packagesBody = (string) $packages->getBody();
 $assert($packages->getStatusCode() === 200, 'The French package catalog must respond with HTTP 200.');
-$assert(str_contains($packagesBody, '<h1 id="packages-index-title">Packages enregistrés</h1>'), 'The French package catalog content is missing.');
+$assert(str_contains($packagesBody, '<h1 id="packages-index-title">Packages publiés</h1>'), 'The French package catalog content is missing.');
 $assert(str_contains($packagesBody, 'data-package-count="2"'), 'The package count is missing.');
 $assert(str_contains($packagesBody, 'href="https://github.com/Matanek/Silex-Lib-Example"'), 'The package repository link is missing.');
 $assert(str_contains($packagesBody, 'Présente des métadonnées réutilisables pour un package Silex.'), 'The localized package description is missing.');
@@ -452,16 +453,15 @@ $assert(str_contains($registryBody, '<h1 id="registry-title">Construisez<br><spa
 $assert(str_contains($registryBody, '<body class="registry-page">'), 'The registry page theme is missing.');
 $assert(substr_count($registryBody, 'class="section-container') >= 3, 'The registry full-width sections are missing their containers.');
 $assert(str_contains($registryBody, 'class="registry-section registry-publish-section"'), 'The registry publication section is missing.');
-$assert(str_contains($registryBody, '<h2 id="publish-title">Enregistrez votre package</h2>'), 'The registry must use a concise package-registration title.');
+$assert(str_contains($registryBody, '<h2 id="publish-title">Publiez votre package</h2>'), 'The registry must explain direct publication.');
 $assert(str_contains($registryBody, 'href="/fr/#packages"'), 'The registry contribution card must link to the complete package catalog.');
 $assert(!str_contains($registryBody, 'registry-packages-section'), 'The registry page must not duplicate a partial package catalog.');
-$assert(str_contains($registryBody, '<h3 class="eyebrow" id="registry-review-title">Suivi des inscriptions</h3>'), 'The registry must use one concise registration-tracking title.');
-$assert(!str_contains($registryBody, 'Suivez votre demande'), 'The registry tracking card must not repeat its title.');
-$assert(str_contains($registryBody, 'Consultez-la pour vérifier son statut et les éventuelles revues.'), 'The registry tracking copy must remain concise.');
-$assert(substr_count($registryBody, 'href="https://github.com/Matanek/Silex-Registry/pulls"') === 2, 'Registry tracking links must point directly to pull requests.');
+$assert(str_contains($registryBody, '<h3 class="eyebrow" id="registry-review-title">Versions publiées</h3>'), 'The registry must explain durable versions.');
+$assert(str_contains($registryBody, 'silex login') && str_contains($registryBody, 'silex publish'), 'The registry must show the current login and publication commands.');
+$assert(!str_contains($registryBody, 'silex register'), 'The obsolete Git registration flow must not appear.');
 $assert(!str_contains($registryBody, 'registry-closing-section'), 'The registry must not end with an oversized generic repository call to action.');
 $assert(str_contains($registryBody, 'href="/en/registry"'), 'The registry language switch must preserve the page.');
-$assert(str_contains($registryBody, 'https://registry.silex-lang.org/v1/index.json'), 'The registry API link is missing.');
+$assert(str_contains($registryBody, 'https://registry.silex-lang.org/v2/catalog'), 'The registry API link is missing.');
 
 $assert($handle('https://silex.test/fr/docs/Missing.md')->getStatusCode() === 404, 'Missing documentation must respond with HTTP 404.');
 

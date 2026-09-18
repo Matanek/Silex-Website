@@ -1,14 +1,14 @@
 {% extends 'layout.twig' %}
 
 {% block title %}{{ locale == 'fr' ? 'Packages Silex' : 'Silex Packages' }}{% endblock %}
-{% block description %}{{ locale == 'fr' ? 'Découvrez les packages Silex inscrits au registre.' : 'Discover Silex packages registered in the public registry.' }}{% endblock %}
+{% block description %}{{ locale == 'fr' ? 'Découvrez les packages Silex publiés sur le registre.' : 'Discover Silex packages published to the public registry.' }}{% endblock %}
 
 {% block content %}
 <section class="packages-index" aria-labelledby="packages-index-title">
     <div class="packages-index-heading">
         <p class="eyebrow">{{ locale == 'fr' ? 'Écosystème Silex' : 'Silex ecosystem' }} · {{ silex_version == 'development' ? 'dev' : 'v' ~ silex_version }}</p>
-        <h1 id="packages-index-title">{{ locale == 'fr' ? 'Packages enregistrés' : 'Registered packages' }}</h1>
-        <p>{{ locale == 'fr' ? 'Chaque entrée renvoie vers le dépôt canonique du package. Sa documentation et ses versions restent sous la responsabilité de son auteur.' : 'Each entry links to the package’s canonical repository. Its author remains responsible for its documentation and releases.' }}</p>
+        <h1 id="packages-index-title">{{ locale == 'fr' ? 'Packages publiés' : 'Published packages' }}</h1>
+        <p>{{ locale == 'fr' ? 'Les versions sont conservées par le registre Cloudflare. Un dépôt GitHub peut être indiqué pour contribuer au développement du package.' : 'Versions are stored by the Cloudflare registry. A GitHub repository may be linked for package development.' }}</p>
     </div>
 
     {% if packages is empty %}

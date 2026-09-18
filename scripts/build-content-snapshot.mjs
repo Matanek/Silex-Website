@@ -120,10 +120,10 @@ for (const entry of registrationEntries.sort((left, right) => left.name.localeCo
     if (registration.schema !== 1 || !packagePattern.test(name) || registration.name !== name) {
         throw new Error(`Registry entry '${entry.name}' has an invalid package contract`);
     }
-    if (!repositoryPattern.test(registration.repository)) {
+    if (registration.repository !== undefined && !repositoryPattern.test(registration.repository)) {
         throw new Error(`Registry entry '${entry.name}' has an invalid canonical repository`);
     }
-    registrations.push({ name, repository: registration.repository, source });
+    registrations.push({ name, source });
 }
 if (registrations.length === 0) throw new Error("The registry contains no package");
 

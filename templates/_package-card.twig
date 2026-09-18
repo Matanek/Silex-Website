@@ -1,6 +1,10 @@
 <article class="package-card">
     <div class="package-card-meta">
-        <a class="package-card-repository" href="{{ package.repository }}" aria-label="{{ package.name }} — {{ locale == 'fr' ? 'ouvrir le dépôt' : 'open repository' }}">{{ package.name }}</a>
+        {% if package.repository %}
+            <a class="package-card-repository" href="{{ package.repository }}" aria-label="{{ package.name }} — {{ locale == 'fr' ? 'ouvrir le dépôt' : 'open repository' }}">{{ package.name }}</a>
+        {% else %}
+            <span class="package-card-name">{{ package.name }}</span>
+        {% endif %}
     </div>
     <p>{{ package.description }}</p>
     {% if package.documentation is defined and package.documentation %}

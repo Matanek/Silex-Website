@@ -166,7 +166,7 @@
     <div class="section-heading home-packages-heading">
         <p class="eyebrow section-tag">{{ locale == 'fr' ? 'Écosystème public' : 'Public ecosystem' }}</p>
         <h2 id="home-packages-title">{{ packages|length }} {{ locale == 'fr' ? 'packages disponibles' : 'packages available' }}</h2>
-        <p>{{ locale == 'fr' ? 'Le catalogue présente les packages inscrits et renvoie vers leurs dépôts, où chacun conserve sa documentation.' : 'The catalog lists registered packages and links to their repositories, where each package keeps its documentation.' }}</p>
+        <p>{{ locale == 'fr' ? 'Le catalogue présente les packages publiés sur Cloudflare. Les liens vers les dépôts de développement sont facultatifs.' : 'The catalog lists packages published on Cloudflare. Links to development repositories are optional.' }}</p>
     </div>
 
     <div class="package-catalog" data-package-count="{{ packages|length }}">
