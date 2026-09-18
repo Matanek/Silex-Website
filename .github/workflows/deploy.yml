@@ -158,7 +158,7 @@ jobs:
             '<h1>Documentation de Silex</h1>'
           wait_for_content \
             https://silex-lang.org/fr/packages \
-            'https://github.com/Matanek/Silex-Lib-STD'
+            'class="package-catalog" data-package-count="'
           wait_for_content \
             https://silex-lang.org/fr/releases \
             '<h1 id="release-notes-title">Ce qui change dans Silex</h1>'
