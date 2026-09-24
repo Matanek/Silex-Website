@@ -1,5 +1,9 @@
 # Silex release notes
 
+## [Unreleased]
+
+Change not yet published.
+
 ## [1.8.0] - 2026-09-08
 
 ### Why upgrade?

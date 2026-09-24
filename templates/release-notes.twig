@@ -1,7 +1,7 @@
 {% extends 'layout.twig' %}
 
 {% block title %}{{ locale == 'fr' ? 'Nouveautés de Silex' : 'What’s new in Silex' }}{% endblock %}
-{% block description %}{{ locale == 'fr' ? 'Découvrez les nouveautés, les changements et l’impact de chaque version de Silex.' : 'Review the features, changes, and upgrade impact of every Silex release.' }}{% endblock %}
+{% block description %}{{ locale == 'fr' ? 'Découvrez les nouveautés, les changements et l’impact des versions récentes de Silex.' : 'Review the features, changes, and upgrade impact of recent Silex releases.' }}{% endblock %}
 {% block body_class %}release-notes-page{% endblock %}
 
 {% block content %}
@@ -10,7 +10,7 @@
         <header class="release-notes-heading">
             <p class="eyebrow">{{ locale == 'fr' ? 'Journal des versions' : 'Release notes' }}</p>
             <h1 id="release-notes-title">{{ locale == 'fr' ? 'Ce qui change dans Silex' : 'What changes in Silex' }}</h1>
-            <p>{{ locale == 'fr' ? 'Pour chaque version, retrouvez ce qu’elle apporte, les projets concernés et les éventuelles étapes de migration.' : 'For every release, see what it brings, which projects are affected, and any migration steps.' }}</p>
+            <p>{{ locale == 'fr' ? 'Retrouvez les apports des versions récentes, les projets concernés et les éventuelles étapes de migration. Ce journal commence à Silex 0.44.1.' : 'Explore recent releases, affected projects, and any migration steps. This journal starts with Silex 0.44.1.' }}</p>
         </header>
     </div>
 </section>

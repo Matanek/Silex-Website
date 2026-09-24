@@ -212,12 +212,14 @@ $assert(str_contains($frenchReleasesBody, '<section class="release-notes-hero"')
 $assert(str_contains($frenchReleasesBody, '<h1 id="release-notes-title">Ce qui change dans Silex</h1>'), 'The French release-notes heading is missing.');
 $assert(str_contains($frenchReleasesBody, 'Silex 1.8.0') && !str_contains($frenchReleasesBody, 'Silex 1.0.0'), 'The first release page must contain only the newest eight versions.');
 $assert(str_contains($frenchReleasesBody, 'Impact et migration'), 'Release notes must explain upgrade impact.');
+$assert(!str_contains($frenchReleasesBody, 'Changement pas encore publié'), 'Pending notes must not appear among published releases.');
 $assert(str_contains($frenchReleasesBody, 'href="/fr/releases?page=2"'), 'Release notes must link to older versions.');
 $assert(str_contains($frenchReleasesBody, 'href="/en/releases"'), 'The release-notes language switch must preserve the first page.');
 
 $englishReleasePage = $handle('https://silex.test/en/releases?page=2');
 $englishReleasePageBody = (string) $englishReleasePage->getBody();
 $assert($englishReleasePage->getStatusCode() === 200, 'The second English release page must respond with HTTP 200.');
+$assert(!str_contains($englishReleasePageBody, 'Change not yet published'), 'Pending English notes must not appear among published releases.');
 $assert(str_contains($englishReleasePageBody, 'Silex 1.0.0') && !str_contains($englishReleasePageBody, 'Silex 1.8.0'), 'The second release page must contain only older versions.');
 $assert(str_contains($englishReleasePageBody, 'href="/en/releases"'), 'The second release page must link back to newer versions.');
 $assert(str_contains($englishReleasePageBody, 'href="/fr/releases?page=2"'), 'The language switch must preserve release pagination.');

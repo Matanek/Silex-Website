@@ -35,7 +35,12 @@ release notes. A release candidate must add matching French and English entries
 with an explicit upgrade rationale, change list, and migration impact. The
 Silex release workflow validates those entries and also uses the English entry
 as the GitHub Release body. Its existing `silex-released` dispatch then rebuilds
-the site snapshot automatically.
+the site snapshot automatically. This editorial history starts at 0.44.1;
+it is not an exhaustive listing of older Git tags. Pending `Unreleased` notes
+are not published as releases. Before dispatching a new minor Silex release,
+publish its matching `Silex-Documentation` branch (`release/<major>.<minor>`).
+After deployment, verify the displayed version and both release-note routes;
+a successful branch push alone does not establish that the notes are online.
 
 The deployment runs for website pushes, manual requests, ecosystem content
 dispatches, and Silex releases. Its immutable release identifier combines the

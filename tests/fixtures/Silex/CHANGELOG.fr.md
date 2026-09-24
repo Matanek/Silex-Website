@@ -1,5 +1,9 @@
 # Journal des versions de Silex
 
+## [Unreleased]
+
+Changement pas encore publié.
+
 ## [1.8.0] - 2026-09-08
 
 ### Pourquoi mettre à jour ?
