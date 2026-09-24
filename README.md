@@ -34,8 +34,10 @@ The `/fr/releases` and `/en/releases` routes paginate the canonical Silex
 release notes. A release candidate must add matching French and English entries
 with an explicit upgrade rationale, change list, and migration impact. The
 Silex release workflow validates those entries and also uses the English entry
-as the GitHub Release body. Its existing `silex-released` dispatch then rebuilds
-the site snapshot automatically. This editorial history starts at 0.44.1;
+as the GitHub Release body. Its website-refresh job dispatches `deploy.yml`,
+awaits that exact run, and checks the requested version in both public locales.
+A failed refresh is retried independently without rebuilding or retagging the
+compiler release. This editorial history starts at 0.44.1;
 it is not an exhaustive listing of older Git tags. Pending `Unreleased` notes
 are not published as releases. Before dispatching a new minor Silex release,
 publish its matching `Silex-Documentation` branch (`release/<major>.<minor>`).

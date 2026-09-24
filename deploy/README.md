@@ -65,3 +65,19 @@ Website pushes, manual runs, `ecosystem-content-updated` dispatches, and
 `silex-released` dispatches rebuild the snapshot immediately. The release
 directory combines the website SHA with the snapshot digest, making a
 content-only refresh immutable and independently deployable.
+
+The Silex release workflow calls `deploy.yml` with the `silex_version` input.
+The build rejects a snapshot with a different version, and the public checks
+verify that version on both release-note routes. The source repository stores
+a dedicated `WEBSITE_DISPATCH_TOKEN` limited to this website repository with
+**Actions: read and write**. It does not need Contents write access: workflow
+dispatch and repository dispatch have different permission requirements.
+Never reuse an interactive developer token as this automation credential.
+
+Silex waits for the exact deployment run returned by GitHub. Missing credentials,
+a rejected dispatch, a failed deployment, or a timeout fail the separate website
+job; the already published compiler release is not rolled back or retagged.
+After fixing the cause, dispatch Silex's `website-refresh.yml` with the published
+version. This exercises the same unattended path as a release. A manual run in
+this repository alone is a fallback, not proof that the cross-repository hook
+works.

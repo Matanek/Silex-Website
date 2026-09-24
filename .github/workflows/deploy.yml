@@ -5,6 +5,11 @@ on:
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      silex_version:
+        description: Expected published Silex version (optional for ordinary deployments)
+        required: false
+        type: string
   repository_dispatch:
     types:
       - ecosystem-content-updated
@@ -42,9 +47,15 @@ jobs:
         run: npm run content:build -- .content/Silex-Documentation .content/Silex-Registry .content/Silex .content/Packages var/content/sources .content/Silex-Extension-VSCode
 
       - name: Identify the website and content release
+        env:
+          EXPECTED_SILEX_VERSION: ${{ inputs.silex_version || github.event.client_payload.version }}
         shell: bash
         run: |
           set -euo pipefail
+          if [[ -n "$EXPECTED_SILEX_VERSION" ]]; then
+            test "$(cat var/content/silex-version.txt)" = "$EXPECTED_SILEX_VERSION"
+          fi
+          printf 'DEPLOYED_SILEX_VERSION=%s\n' "$(cat var/content/silex-version.txt)" >> "$GITHUB_ENV"
           content_digest=$(sha256sum var/content/sources/snapshot.json | cut -c1-16)
           release="$GITHUB_SHA-$content_digest"
           printf '%s\n' "$release" > release.txt
@@ -162,6 +173,8 @@ jobs:
           wait_for_content \
             https://silex-lang.org/fr/releases \
             '<h1 id="release-notes-title">Ce qui change dans Silex</h1>'
+          wait_for_content https://silex-lang.org/fr/releases "$DEPLOYED_SILEX_VERSION"
+          wait_for_content https://silex-lang.org/en/releases "$DEPLOYED_SILEX_VERSION"
           wait_for_content \
             https://silex.nekmata.com/ \
             "Silex Web release: $SILEX_WEB_RELEASE"
