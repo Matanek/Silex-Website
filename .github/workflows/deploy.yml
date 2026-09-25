@@ -14,6 +14,8 @@ on:
     types:
       - ecosystem-content-updated
       - silex-released
+  schedule:
+    - cron: '17 */2 * * *'
 
 permissions:
   contents: read
@@ -47,6 +49,7 @@ jobs:
         run: npm run content:build -- .content/Silex-Documentation .content/Silex-Registry .content/Silex .content/Packages var/content/sources .content/Silex-Extension-VSCode .content/Silex-Release-Notes
 
       - name: Identify the website and content release
+        id: release
         env:
           EXPECTED_SILEX_VERSION: ${{ inputs.silex_version || github.event.client_payload.version }}
         shell: bash
@@ -60,17 +63,29 @@ jobs:
           release="$GITHUB_SHA-$content_digest"
           printf '%s\n' "$release" > release.txt
           printf 'SILEX_WEB_RELEASE=%s\n' "$release" >> "$GITHUB_ENV"
+          if [[ "$GITHUB_EVENT_NAME" == schedule ]] \
+            && response=$(curl --fail --silent --show-error --location https://silex-lang.org/) \
+            && grep -Fq "Silex Web release: $release" <<< "$response"; then
+            echo 'deploy_needed=false' >> "$GITHUB_OUTPUT"
+            echo 'Canonical sources and website commit are unchanged; no deployment needed.'
+          else
+            echo 'deploy_needed=true' >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Install locked PHP dependencies
+        if: steps.release.outputs.deploy_needed == 'true'
         run: composer install --no-interaction --no-progress --prefer-dist --optimize-autoloader
 
       - name: Install locked frontend dependencies
+        if: steps.release.outputs.deploy_needed == 'true'
         run: npm ci --no-audit --no-fund
 
       - name: Build the Tailwind stylesheet
+        if: steps.release.outputs.deploy_needed == 'true'
         run: npm run build
 
       - name: Validate the website
+        if: steps.release.outputs.deploy_needed == 'true'
         run: |
           npm test
           composer validate --strict
@@ -78,6 +93,7 @@ jobs:
           composer check
 
       - name: Validate deployment configuration
+        if: steps.release.outputs.deploy_needed == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -95,6 +111,7 @@ jobs:
           fi
 
       - name: Configure the deployment key
+        if: steps.release.outputs.deploy_needed == 'true'
         shell: bash
         run: |
           install -m 700 -d ~/.ssh
@@ -103,6 +120,7 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519 ~/.ssh/known_hosts
 
       - name: Upload and activate the immutable release
+        if: steps.release.outputs.deploy_needed == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -137,6 +155,7 @@ jobs:
           REMOTE
 
       - name: Check the public deployment
+        if: steps.release.outputs.deploy_needed == 'true'
         shell: bash
         run: |
           set -euo pipefail

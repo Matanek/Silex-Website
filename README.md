@@ -46,6 +46,13 @@ immutable compiler tag. Correcting a historical description therefore needs a
 website refresh, not a new compiler version or a moved tag. Silex changelog
 pushes request this refresh automatically, using the latest published version
 even when `main` already contains a future candidate.
+The website also checks canonical sources every two hours. If the website
+commit and fetched snapshot already match the public release, it skips
+dependency installation and deployment; otherwise it publishes and verifies
+the new snapshot. This independent path keeps release notes synchronized when
+the immediate cross-repository dispatch credential is unavailable. It can lag
+the Silex push by up to one polling interval; the dispatch remains the route
+for immediate release verification.
 This editorial history starts at 0.44.1;
 it is not an exhaustive listing of older Git tags. Pending `Unreleased` notes
 are not published as releases. Before dispatching a new minor Silex release,
@@ -54,8 +61,8 @@ After deployment, verify the displayed version and both release-note routes;
 a successful branch push alone does not establish that the notes are online.
 
 The deployment runs for website pushes, manual requests, ecosystem content
-dispatches, and Silex releases. Its immutable release identifier combines the
-website commit with the content-snapshot digest.
+dispatches, Silex releases, and scheduled source changes. Its immutable release
+identifier combines the website commit with the content-snapshot digest.
 
 The displayed Silex version resolves, in order, from `SILEX_VERSION`, locally
 from `../Silex/Toolchain/build.zig.zon`, or from the immutable release file
