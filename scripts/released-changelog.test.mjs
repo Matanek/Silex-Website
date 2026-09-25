@@ -18,3 +18,11 @@ test("a pending section after a published entry cannot leak into its body", () =
     const result = releasedChangelog("# Notes\n## [0.47.0] - 2026-09-24\nreleased\n## [Unreleased]\nprivate draft", new Set(["0.47.0"]), "0.47.0", "EN");
     assert.doesNotMatch(result, /private draft/);
 });
+
+test("editorial corrections cannot silently delete or redate published history", () => {
+    const baseline = "# Notes\n## [0.47.0] - 2026-09-24\nold description\n## [0.46.1] - 2026-09-19\nolder history\n";
+    const published = new Set(["0.47.0", "0.46.1"]);
+    assert.match(releasedChangelog(baseline.replace("old description", "corrected description"), published, "0.47.0", "FR", baseline), /corrected description/);
+    assert.throws(() => releasedChangelog(baseline.split("## [0.46.1]")[0], published, "0.47.0", "FR", baseline), /removes or redates/);
+    assert.throws(() => releasedChangelog(baseline.replace("2026-09-19", "2026-09-20"), published, "0.47.0", "FR", baseline), /removes or redates/);
+});

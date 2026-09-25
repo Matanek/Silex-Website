@@ -1,4 +1,4 @@
-import { mkdir, rm, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import { normalizePackageDescription } from "./package-description.mjs";
@@ -55,9 +55,13 @@ async function fetchReleaseNotes(silexRoot, repository, latestVersion) {
     for (const filename of ["CHANGELOG.fr.md", "CHANGELOG.md"]) {
         const result = spawnSync("git", ["-C", silexRoot, "show", `${commit}:${filename}`], { encoding: "utf8" });
         if (result.status !== 0) throw new Error(`Unable to read ${filename} from ${repository} main`);
+        const baseline = await readFile(join(silexRoot, filename), "utf8").catch((error) => {
+            if (error.code === "ENOENT") return null; // Historical tags can predate the changelog.
+            throw error;
+        });
         await writeFile(
             join(notesRoot, filename),
-            releasedChangelog(result.stdout, latestVersion.publishedVersions, latestVersion.tag.slice(1), filename),
+            releasedChangelog(result.stdout, latestVersion.publishedVersions, latestVersion.tag.slice(1), filename, baseline),
         );
     }
     await writeFile(join(notesRoot, "source.json"), `${JSON.stringify({ repository, commit, reference: "refs/heads/main", published_tag: latestVersion.tag })}\n`);

@@ -40,6 +40,7 @@ A failed refresh is retried independently without rebuilding or retagging the
 compiler release. Editorial corrections are fetched from one exact Silex `main`
 commit into a separate release-note source. Only entries backed by published
 stable tags are retained; `Unreleased` and untagged candidates are excluded.
+Corrections cannot remove or redate entries already present in the release tag.
 The snapshot records the note commit and content digest independently of the
 immutable compiler tag. Correcting a historical description therefore needs a
 website refresh, not a new compiler version or a moved tag. Silex changelog
