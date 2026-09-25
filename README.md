@@ -37,7 +37,15 @@ Silex release workflow validates those entries and also uses the English entry
 as the GitHub Release body. Its website-refresh job dispatches `deploy.yml`,
 awaits that exact run, and checks the requested version in both public locales.
 A failed refresh is retried independently without rebuilding or retagging the
-compiler release. This editorial history starts at 0.44.1;
+compiler release. Editorial corrections are fetched from one exact Silex `main`
+commit into a separate release-note source. Only entries backed by published
+stable tags are retained; `Unreleased` and untagged candidates are excluded.
+The snapshot records the note commit and content digest independently of the
+immutable compiler tag. Correcting a historical description therefore needs a
+website refresh, not a new compiler version or a moved tag. Silex changelog
+pushes request this refresh automatically, using the latest published version
+even when `main` already contains a future candidate.
+This editorial history starts at 0.44.1;
 it is not an exhaustive listing of older Git tags. Pending `Unreleased` notes
 are not published as releases. Before dispatching a new minor Silex release,
 publish its matching `Silex-Documentation` branch (`release/<major>.<minor>`).
@@ -71,6 +79,7 @@ Tailwind CSS produces the static stylesheet.
 composer install
 npm ci
 npm run build
+npm test
 npm run content:build
 composer check
 ```

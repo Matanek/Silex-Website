@@ -2,6 +2,7 @@
   "name": "silex-web",
   "private": true,
   "scripts": {
+    "test": "node --test scripts/*.test.mjs",
     "build": "npm run build:css && npm run build:syntax",
     "build:css": "tailwindcss -i ./assets/css/app.css -o ./public/assets/app.css --minify",
     "build:syntax": "node scripts/build-syntax-highlighting.mjs",

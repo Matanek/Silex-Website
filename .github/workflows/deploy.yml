@@ -44,7 +44,7 @@ jobs:
         run: npm run content:fetch
 
       - name: Build the immutable documentation snapshot
-        run: npm run content:build -- .content/Silex-Documentation .content/Silex-Registry .content/Silex .content/Packages var/content/sources .content/Silex-Extension-VSCode
+        run: npm run content:build -- .content/Silex-Documentation .content/Silex-Registry .content/Silex .content/Packages var/content/sources .content/Silex-Extension-VSCode .content/Silex-Release-Notes
 
       - name: Identify the website and content release
         env:
@@ -72,6 +72,7 @@ jobs:
 
       - name: Validate the website
         run: |
+          npm test
           composer validate --strict
           composer audit --locked
           composer check
@@ -173,8 +174,9 @@ jobs:
           wait_for_content \
             https://silex-lang.org/fr/releases \
             '<h1 id="release-notes-title">Ce qui change dans Silex</h1>'
-          wait_for_content https://silex-lang.org/fr/releases "$DEPLOYED_SILEX_VERSION"
-          wait_for_content https://silex-lang.org/en/releases "$DEPLOYED_SILEX_VERSION"
+          release_heading="<h2 id=\"release-${DEPLOYED_SILEX_VERSION//./-}\">Silex $DEPLOYED_SILEX_VERSION</h2>"
+          wait_for_content https://silex-lang.org/fr/releases "$release_heading"
+          wait_for_content https://silex-lang.org/en/releases "$release_heading"
           wait_for_content \
             https://silex.nekmata.com/ \
             "Silex Web release: $SILEX_WEB_RELEASE"

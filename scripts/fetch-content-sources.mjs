@@ -1,7 +1,8 @@
-import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, rm, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import { normalizePackageDescription } from "./package-description.mjs";
+import { releasedChangelog } from "./released-changelog.mjs";
 
 const outputRoot = resolve(process.argv[2] ?? ".content");
 const packagePattern = /^[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*$/;
@@ -37,60 +38,30 @@ function latestVersionTag(repository) {
         || left.patch - right.patch
         || (left.prerelease === null ? 1 : right.prerelease === null ? -1 : left.prerelease.localeCompare(right.prerelease, "en")),
     );
-    const latest = versions.at(-1);
+    const latest = versions.filter((version) => version.prerelease === null).at(-1);
     if (latest === undefined) throw new Error(`Canonical repository ${repository} has no published semantic version`);
 
-    return latest;
+    return { ...latest, publishedVersions: new Set(versions.filter((version) => version.prerelease === null).map((version) => version.tag.slice(1))) };
 }
 
-function compareVersion(left, right) {
-    return left.major - right.major || left.minor - right.minor || left.patch - right.patch;
-}
-
-function releasedChangelog(source, latestVersion, label) {
-    const headings = [...source.matchAll(/^## \[(\d+)\.(\d+)\.(\d+)\] - \d{4}-\d{2}-\d{2}[ \t]*$/gm)];
-    const selected = headings.filter((heading) => compareVersion({
-        major: Number(heading[1]),
-        minor: Number(heading[2]),
-        patch: Number(heading[3]),
-    }, latestVersion) <= 0);
-    if (!selected.some((heading) => Number(heading[1]) === latestVersion.major
-        && Number(heading[2]) === latestVersion.minor
-        && Number(heading[3]) === latestVersion.patch)) {
-        throw new Error(`${label} does not describe published ${latestVersion.tag}`);
-    }
-
-    const prefix = source.slice(0, headings[0]?.index ?? source.length).trimEnd();
-    const sections = selected.map((heading) => {
-        const index = headings.indexOf(heading);
-        const end = headings[index + 1]?.index ?? source.length;
-        return source.slice(heading.index, end).trim();
-    });
-
-    return `${prefix}\n\n${sections.join("\n\n")}\n`;
-}
-
-async function ensureReleaseNotes(silexRoot, repository, latestVersion) {
-    try {
-        await Promise.all([
-            readFile(join(silexRoot, "CHANGELOG.fr.md")),
-            readFile(join(silexRoot, "CHANGELOG.md")),
-        ]);
-        return;
-    } catch {
-        const fetch = spawnSync("git", ["-C", silexRoot, "fetch", "--quiet", "--depth=1", "origin", "refs/heads/main"]);
-        if (fetch.status !== 0) throw new Error(`Unable to bootstrap release notes from ${repository}`);
-    }
-
+async function fetchReleaseNotes(silexRoot, repository, latestVersion) {
+    const fetch = spawnSync("git", ["-C", silexRoot, "fetch", "--quiet", "--depth=1", "origin", "refs/heads/main"]);
+    if (fetch.status !== 0) throw new Error(`Unable to fetch release notes from ${repository}`);
+    const revision = spawnSync("git", ["-C", silexRoot, "rev-parse", "FETCH_HEAD"], { encoding: "utf8" });
+    if (revision.status !== 0 || !/^[a-f0-9]{40}$/.test(revision.stdout.trim())) throw new Error("Invalid release-note source commit");
+    const commit = revision.stdout.trim();
+    const notesRoot = resolve(outputRoot, "Silex-Release-Notes");
+    await mkdir(notesRoot, { recursive: true });
     for (const filename of ["CHANGELOG.fr.md", "CHANGELOG.md"]) {
-        const result = spawnSync("git", ["-C", silexRoot, "show", `FETCH_HEAD:${filename}`], { encoding: "utf8" });
+        const result = spawnSync("git", ["-C", silexRoot, "show", `${commit}:${filename}`], { encoding: "utf8" });
         if (result.status !== 0) throw new Error(`Unable to read ${filename} from ${repository} main`);
         await writeFile(
-            join(silexRoot, filename),
-            releasedChangelog(result.stdout, latestVersion, filename),
+            join(notesRoot, filename),
+            releasedChangelog(result.stdout, latestVersion.publishedVersions, latestVersion.tag.slice(1), filename),
         );
     }
-    console.log(`Bootstrapped release notes for ${latestVersion.tag} from Silex main`);
+    await writeFile(join(notesRoot, "source.json"), `${JSON.stringify({ repository, commit, reference: "refs/heads/main", published_tag: latestVersion.tag })}\n`);
+    console.log(`Fetched published release notes from Silex commit ${commit}`);
 }
 
 await rm(outputRoot, { recursive: true, force: true });
@@ -102,7 +73,7 @@ const documentationReference = process.env.SILEX_DOCUMENTATION_REF ?? `release/$
 
 const silexRoot = resolve(outputRoot, "Silex");
 clone(silexRepository, silexRoot, silexVersion.tag);
-await ensureReleaseNotes(silexRoot, silexRepository, silexVersion);
+await fetchReleaseNotes(silexRoot, silexRepository, silexVersion);
 clone("https://github.com/Matanek/Silex-Documentation.git", resolve(outputRoot, "Silex-Documentation"), documentationReference);
 clone("https://github.com/Matanek/Silex-Extension-VSCode.git", resolve(outputRoot, "Silex-Extension-VSCode"));
 clone("https://github.com/Matanek/Silex-Registry.git", resolve(outputRoot, "Silex-Registry"));

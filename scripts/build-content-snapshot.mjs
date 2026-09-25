@@ -10,6 +10,7 @@ const silexRoot = resolve(process.argv[4] ?? "../Silex");
 const packagesRoot = resolve(process.argv[5] ?? "../Packages");
 const outputRoot = resolve(process.argv[6] ?? "var/content/sources");
 const vscodeExtensionRoot = resolve(process.argv[7] ?? "../Silex-Extension-VSCode");
+const releaseNotesRoot = resolve(process.argv[8] ?? silexRoot);
 const stagingRoot = `${outputRoot}.tmp-${process.pid}`;
 const packagePattern = /^[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*$/;
 const repositoryPattern = /^https:\/\/github\.com\/[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+\.git$/;
@@ -141,16 +142,19 @@ try {
         throw new Error(`The EN and FR documentation inventories differ (${documentCounts.en} vs ${documentCounts.fr})`);
     }
 
-    const frenchReleaseNotes = await readFile(join(silexRoot, "CHANGELOG.fr.md"), "utf8");
-    const englishReleaseNotes = await readFile(join(silexRoot, "CHANGELOG.md"), "utf8");
+    const frenchReleaseNotes = await readFile(join(releaseNotesRoot, "CHANGELOG.fr.md"), "utf8");
+    const englishReleaseNotes = await readFile(join(releaseNotesRoot, "CHANGELOG.md"), "utf8");
     const frenchReleaseInventory = releaseInventory(frenchReleaseNotes, "fr", "CHANGELOG.fr.md");
     const englishReleaseInventory = releaseInventory(englishReleaseNotes, "en", "CHANGELOG.md");
     if (JSON.stringify(frenchReleaseInventory) !== JSON.stringify(englishReleaseInventory)) {
         throw new Error("The French and English release-note inventories differ");
     }
     await mkdir(join(stagingRoot, "Silex"), { recursive: true });
-    await copyFile(join(silexRoot, "CHANGELOG.fr.md"), join(stagingRoot, "Silex/CHANGELOG.fr.md"));
-    await copyFile(join(silexRoot, "CHANGELOG.md"), join(stagingRoot, "Silex/CHANGELOG.md"));
+    await copyFile(join(releaseNotesRoot, "CHANGELOG.fr.md"), join(stagingRoot, "Silex/CHANGELOG.fr.md"));
+    await copyFile(join(releaseNotesRoot, "CHANGELOG.md"), join(stagingRoot, "Silex/CHANGELOG.md"));
+    const releaseNotesSource = process.argv[8]
+        ? await readJson(join(releaseNotesRoot, "source.json"), "Release-note provenance")
+        : { commit: gitValue(silexRoot, ["rev-parse", "HEAD"]), reference: "workspace" };
     const releaseNotesDigest = createHash("sha256")
         .update(frenchReleaseNotes)
         .update("\0")
@@ -185,6 +189,11 @@ try {
     if (!version || !/^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/.test(version)) {
         throw new Error("The canonical Silex version is missing or invalid");
     }
+    if (process.argv[8] && (releaseNotesSource.published_tag !== `v${version}`
+        || !/^[a-f0-9]{40}$/.test(releaseNotesSource.commit)
+        || frenchReleaseInventory[0].version !== version)) {
+        throw new Error("Release-note provenance does not match the published compiler");
+    }
 
     const textmateGrammarPath = join(vscodeExtensionRoot, "syntaxes/silex.tmLanguage.json");
     const textmateGrammarSource = await readFile(textmateGrammarPath, "utf8");
@@ -198,7 +207,7 @@ try {
         `${JSON.stringify({
             schema: 3,
             silex: { version, commit: gitValue(silexRoot, ["rev-parse", "HEAD"]), tag: gitValue(silexRoot, ["describe", "--tags", "--exact-match"]) },
-            release_notes: { releases: frenchReleaseInventory.length, digest: releaseNotesDigest },
+            release_notes: { ...releaseNotesSource, releases: frenchReleaseInventory.length, digest: releaseNotesDigest },
             documentation: {
                 commit: gitValue(documentationRoot, ["rev-parse", "HEAD"]),
                 reference: gitValue(documentationRoot, ["branch", "--show-current"]),
