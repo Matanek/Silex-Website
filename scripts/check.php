@@ -97,15 +97,16 @@ $assert(str_contains($homeBody, 'Hello from Silex!'), 'The hero example output i
 $assert(str_contains($homeBody, 'id="zed"'), 'The Zed installation section is missing.');
 $assert(str_contains($homeBody, '<p class="eyebrow section-tag" id="zed-title">Installer l’extension Zed</p>'), 'The tagged French Zed section heading is missing.');
 $assert(!str_contains($homeBody, 'Installer l’extension Silex pour Zed.'), 'The duplicated French Zed installation heading is still rendered.');
-$assert(str_contains($homeBody, 'Installation rapide') && str_contains($homeBody, 'En attente de validation'), 'The unavailable French Zed gallery path is missing.');
-$assert(str_contains($homeBody, 'Installation manuelle') && str_contains($homeBody, 'Disponible maintenant'), 'The available French Zed manual path is missing.');
-$assert(str_contains($homeBody, '<strong class="zed-titlebar-availability">Disponible maintenant</strong>'), 'The French Zed title bar must contain one readable availability label.');
+$assert(str_contains($homeBody, 'Disponible dans le catalogue Zed') && str_contains($homeBody, 'Recherchez Silex, puis cliquez sur Install.'), 'The French homepage must explain installation from the published Zed gallery.');
+$assert(!str_contains($homeBody, 'En attente de validation') && !str_contains($homeBody, 'ne fonctionne pas encore'), 'The French homepage must not describe the Zed gallery as unavailable.');
+$assert(str_contains($homeBody, '<summary>Installation manuelle · version de développement</summary>'), 'The French homepage must retain manual installation as a development alternative.');
+$assert(str_contains($homeBody, '<strong class="zed-titlebar-availability">Depuis le catalogue Zed</strong>'), 'The French Zed title bar must identify the recommended gallery installation.');
 $assert(str_contains($homeBody, '<a href="https://zed.dev/">Zed</a> est un éditeur de code moderne.'), 'The French Zed introduction must identify and link to the code editor.');
 $assert(str_contains($homeBody, 'rustup target add wasm32-wasip2'), 'The Zed WebAssembly target setup is missing.');
-$assert(str_contains($homeBody, '<a href="https://rust-lang.org/tools/install/">Installez-le avec rustup</a>'), 'The French Zed setup must link to the official Rust installer.');
+$assert(str_contains($homeBody, '<a href="https://rust-lang.org/tools/install/">Rust avec rustup</a>'), 'The French manual Zed setup must link to the official Rust installer.');
 $assert(str_contains($homeBody, 'git clone https://github.com/Matanek/Silex-Extension-Zed.git'), 'The Zed extension clone command is missing.');
 $assert(str_contains($homeBody, 'zed: install dev extension'), 'The Zed development installation command is missing.');
-$assert(str_contains($homeBody, 'href="https://github.com/zed-industries/extensions/pull/7190"'), 'The Zed catalog pull request is missing.');
+$assert(str_contains($homeBody, 'href="/fr/docs/Tools/Install-Zed-extension.md"'), 'The French Zed section must link to the canonical installation guide.');
 $assert(str_contains($homeBody, 'v9.8.7'), 'The configured Silex version is missing.');
 $assert(str_contains($homeBody, 'data-package-count="2"'), 'The home page package catalog is missing.');
 $assert(str_contains($homeBody, 'href="/fr/#packages">Packages</a>'), 'The French navigation must link to the home page package catalog.');
@@ -192,11 +193,21 @@ $assert(!str_contains($englishHomeBody, 'The standalone compiler does not requir
 $assert(str_contains($englishHomeBody, 'href="/fr/"'), 'The English language switch is missing.');
 $assert(str_contains($englishHomeBody, '<p class="eyebrow section-tag" id="zed-title">Install the Zed extension</p>'), 'The tagged English Zed section heading is missing.');
 $assert(!str_contains($englishHomeBody, 'Install the Silex extension for Zed.'), 'The duplicated English Zed installation heading is still rendered.');
-$assert(str_contains($englishHomeBody, 'Quick installation') && str_contains($englishHomeBody, 'Awaiting approval'), 'The unavailable English Zed gallery path is missing.');
-$assert(str_contains($englishHomeBody, 'Manual installation') && str_contains($englishHomeBody, 'Available now'), 'The available English Zed manual path is missing.');
-$assert(str_contains($englishHomeBody, '<strong class="zed-titlebar-availability">Available now</strong>'), 'The English Zed title bar must contain one readable availability label.');
+$assert(str_contains($englishHomeBody, 'Available in the Zed gallery') && str_contains($englishHomeBody, 'Search for Silex, then click Install.'), 'The English homepage must explain installation from the published Zed gallery.');
+$assert(!str_contains($englishHomeBody, 'Awaiting approval') && !str_contains($englishHomeBody, 'does not work yet'), 'The English homepage must not describe the Zed gallery as unavailable.');
+$assert(str_contains($englishHomeBody, '<summary>Manual installation · development version</summary>'), 'The English homepage must retain manual installation as a development alternative.');
+$assert(str_contains($englishHomeBody, '<strong class="zed-titlebar-availability">From the Zed gallery</strong>'), 'The English Zed title bar must identify the recommended gallery installation.');
 $assert(str_contains($englishHomeBody, '<a href="https://zed.dev/">Zed</a> is a modern code editor.'), 'The English Zed introduction must identify and link to the code editor.');
-$assert(str_contains($englishHomeBody, '<a href="https://rust-lang.org/tools/install/">Install it with rustup</a>'), 'The English Zed setup must link to the official Rust installer.');
+$assert(str_contains($englishHomeBody, '<a href="https://rust-lang.org/tools/install/">Rust with rustup</a>'), 'The English manual Zed setup must link to the official Rust installer.');
+$assert(str_contains($englishHomeBody, 'href="/en/docs/Tools/Install-Zed-extension.md"'), 'The English Zed section must link to the canonical installation guide.');
+foreach ([$homeBody, $englishHomeBody] as $localizedHomeBody) {
+    $assert(preg_match('/<section[^>]*id="zed"[^>]*>(.*?)<\/section>/s', $localizedHomeBody, $zedSection) === 1, 'The Zed installation section must render in both locales.');
+    $assert(preg_match('/<details class="zed-manual-installation">(.*?)<\/details>/s', $zedSection[1], $manualInstallation) === 1, 'Manual Zed installation must be expandable and collapsed by default.');
+    $galleryInstallation = strstr($zedSection[1], '<details class="zed-manual-installation">', true);
+    $assert(is_string($galleryInstallation) && str_contains($galleryInstallation, 'silex --version'), 'The gallery path must verify the external Silex installation.');
+    $assert(!str_contains($galleryInstallation, 'rustup target add') && !str_contains($galleryInstallation, 'git clone'), 'Git and Rust setup must remain exclusive to the manual alternative.');
+    $assert(str_contains($manualInstallation[1], 'rustup target add wasm32-wasip2') && str_contains($manualInstallation[1], 'git clone') && str_contains($manualInstallation[1], 'zed: install dev extension'), 'The manual alternative must retain the complete development installation.');
+}
 $assert(str_contains($englishHomeBody, 'Demonstrates reusable Silex package metadata.'), 'The English package card must display the canonical manifest description.');
 $assert(str_contains($englishHomeBody, 'href="/en/#packages">Packages</a>'), 'The English navigation must link to the home page package catalog.');
 $assert(!str_contains($englishHomeBody, 'Why Silex?'), 'The redundant English principles heading must not be rendered.');

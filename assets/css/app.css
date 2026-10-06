@@ -225,19 +225,18 @@ h1, h2, h3, p { margin-top: 0; }
 .zed-setup { margin-top: 0; background: var(--color-white); }
 .zed-setup-copy > p:not(.eyebrow) { max-width: 390px; margin-bottom: 0; color: var(--muted); font-size: 0.93rem; }
 .zed-setup-copy > p:not(.eyebrow) a { color: var(--color-sky-700); text-underline-offset: 3px; }
+.zed-setup-copy > p.zed-prerequisite { margin-top: 16px; font-size: 0.78rem; }
 .zed-setup-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 22px; margin-top: 26px; }
-.zed-gallery-waiting { margin-top: 34px; padding-top: 22px; border-top: 1px solid var(--line); }
-.zed-gallery-waiting > div { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
-.zed-gallery-waiting > div > span:first-child { color: var(--text); font-size: 0.76rem; font-weight: 700; }
-.zed-gallery-waiting p { margin-bottom: 9px; color: var(--color-gray-500); font-size: 0.74rem; }
-.zed-gallery-waiting a { color: var(--muted); font-size: 0.7rem; font-weight: 700; text-decoration: none; }
-.zed-gallery-waiting a span { color: var(--accent); }
-.zed-gallery-waiting a:hover { color: var(--text); }
-.zed-path-status { display: inline-flex; align-items: center; gap: 6px; padding: 3px 8px; border: 1px solid var(--color-gray-700); border-radius: 999px; font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: 0.58rem; font-weight: 700; white-space: nowrap; }
-.zed-path-status::before { width: 6px; height: 6px; border-radius: 50%; content: ""; }
-.zed-path-status-pending { color: var(--color-gray-500); }
-.zed-path-status-pending::before { background: var(--color-gray-600); }
+.zed-alternative { margin-top: 34px; padding-top: 22px; border-top: 1px solid var(--line); }
+.zed-alternative > strong { display: block; margin-bottom: 10px; color: var(--text); font-size: 0.76rem; }
+.zed-alternative p { margin: 0; color: var(--muted); font-size: 0.74rem; }
 .zed-setup-terminal .zed-titlebar-availability { max-width: calc(100% - 70px); overflow: hidden; color: var(--accent); text-overflow: ellipsis; white-space: nowrap; }
+.zed-gallery-instruction { margin: 0; color: var(--code); font-size: 0.85rem; }
+.zed-manual-installation { border-top: 1px solid var(--color-gray-800); }
+.zed-manual-installation summary { padding: 16px 24px; color: var(--accent); font-size: 0.74rem; cursor: pointer; }
+.zed-manual-installation summary:hover { background: var(--color-gray-900); }
+.zed-manual-installation summary:focus-visible { outline: 2px solid var(--accent); outline-offset: -4px; }
+.zed-manual-note { margin: 0; padding: 0 24px 20px; color: var(--color-gray-500); font-size: 0.68rem; }
 .zed-manual-steps { padding-block: 6px; }
 .zed-manual-steps li { padding-block: 15px; }
 .zed-step-commands { display: grid; gap: 2px; }
